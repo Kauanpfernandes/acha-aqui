@@ -284,7 +284,10 @@ function buscarJson(url, opcoes, ms){
 var catalogo = [];
 
 function carregarCatalogo(){
-  return buscarJson('catalogo.json').then(function(j){
+  // 'no-cache' obriga o navegador a confirmar com o servidor antes de usar a
+  // cópia guardada. Sem isso, quem já visitou continua com o catálogo antigo
+  // depois de uma atualização, e a busca passa a achar o produto errado.
+  return buscarJson('catalogo.json', { cache: 'no-cache' }).then(function(j){
     catalogo = j.produtos || [];
     montarSugestoes();
     montarDatalist();
