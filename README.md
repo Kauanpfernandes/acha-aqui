@@ -18,6 +18,20 @@
   <img src="https://img.shields.io/badge/26_testes-0f766e?style=flat-square" alt="26 testes">
 </p>
 
+<p align="center">
+  <a href="https://kauanpfernandes.github.io/acha-aqui/"><img src="https://img.shields.io/badge/▶%20abrir%20a%20demonstração-145f55?style=for-the-badge" alt="Abrir a demonstração"></a>
+</p>
+
+![A demonstração rodando](docs/demo.png)
+
+A demonstração acima está no ar e funciona: as lojas e os preços que ela mostra
+são consultados na hora, no OpenStreetMap e no Open Prices. Ela roda só no
+navegador, então tem uma diferença em relação à API: a busca por nome usa um
+catálogo de 52 produtos que vem junto com a página, porque o Open Food Facts
+bloqueia busca por nome vinda do navegador (CORS). Consulta por código de barras
+ele libera, e é o que a demo usa. A API não tem essa limitação, porque busca pelo
+servidor.
+
 ![Documentação da API no Swagger](docs/swagger.png)
 
 ## O problema, e a parte que ninguém conta
