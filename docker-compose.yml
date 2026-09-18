@@ -1,0 +1,32 @@
+services:
+  banco:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: achaaqui
+    ports:
+      - '5432:5432'
+    volumes:
+      - dados_do_banco:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build: .
+    depends_on:
+      banco:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DATABASE_URL: postgres://postgres:postgres@banco:5432/achaaqui
+      JWT_SECRET: ${JWT_SECRET:-segredo-de-desenvolvimento-com-mais-de-32-caracteres}
+    ports:
+      - '3000:3000'
+
+volumes:
+  dados_do_banco:

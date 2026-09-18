@@ -1,0 +1,45 @@
+name: Testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ubuntu-latest
+
+    # Um Postgres com PostGIS de verdade para a suite. Os testes de distancia
+    # dependem de ST_DWithin, entao banco falso aqui nao serviria.
+    services:
+      postgres:
+        image: postgis/postgis:16-3.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: achaaqui_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Conferir os tipos
+        run: npm run lint
+
+      - name: Rodar os testes
+        run: npm test
+        env:
+          DATABASE_URL_TESTE: postgres://postgres:postgres@localhost:5432/achaaqui_test
