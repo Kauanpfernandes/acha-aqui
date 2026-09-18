@@ -6,31 +6,13 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Kauanpfernandes/acha-aqui/actions/workflows/ci.yml"><img src="https://github.com/Kauanpfernandes/acha-aqui/actions/workflows/ci.yml/badge.svg" alt="Testes"></a>
-</p>
-
-<p align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white" alt="Express">
   <img src="https://img.shields.io/badge/PostgreSQL_+_PostGIS-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL e PostGIS">
   <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/26_testes-0f766e?style=flat-square" alt="26 testes">
+  <img src="https://img.shields.io/badge/39_testes-0f766e?style=flat-square" alt="39 testes">
 </p>
-
-<p align="center">
-  <a href="https://kauanpfernandes.github.io/acha-aqui/"><img src="https://img.shields.io/badge/▶%20abrir%20a%20demonstração-145f55?style=for-the-badge" alt="Abrir a demonstração"></a>
-</p>
-
-![A demonstração rodando](docs/demo.png)
-
-A demonstração acima está no ar e funciona: as lojas e os preços que ela mostra
-são consultados na hora, no OpenStreetMap e no Open Prices. Ela roda só no
-navegador, então tem uma diferença em relação à API: a busca por nome usa um
-catálogo de 52 produtos que vem junto com a página, porque o Open Food Facts
-bloqueia busca por nome vinda do navegador (CORS). Consulta por código de barras
-ele libera, e é o que a demo usa. A API não tem essa limitação, porque busca pelo
-servidor.
 
 ![Documentação da API no Swagger](docs/swagger.png)
 
@@ -58,6 +40,18 @@ assim, o projeto assume: quem usa também alimenta. A API externa dá o empurrã
 inicial, e o que faz a base crescer é gente registrando preço de mercado de
 bairro que nem no mapa está.
 
+Tem um segundo buraco, e ele é maior: **o Open Food Facts só conhece comida**.
+Bebida, higiene e limpeza também, mas peça de carro, parafuso, ração e caderno
+não estão lá, e não existe base aberta equivalente para essas coisas. Procurar
+"pastilha de freio" devolveria 404, o que é uma resposta ruim para uma pergunta
+razoável.
+
+Só que a pergunta principal não precisa de um catálogo de produtos. "Onde eu
+acho isso perto de mim" precisa saber que loja vende o quê, e isso o
+OpenStreetMap sabe: cada ponto no mapa carrega uma etiqueta do tipo
+`shop=car_parts`. Então a busca tem dois caminhos, e a resposta diz em qual
+deles ela veio.
+
 ## Como a busca funciona por dentro
 
 `GET /api/busca?q=leite condensado&lat=-19.9227&lon=-43.9451&raio=3000`
@@ -76,6 +70,37 @@ bairro que nem no mapa está.
 
 A resposta traz também um campo `fontes`, dizendo quais integrações responderam
 naquela chamada.
+
+### Quando o termo não é comida
+
+`GET /api/busca?q=pastilha de freio&lat=-19.9227&lon=-43.9451`
+
+Aí o passo 1 não acha nada, e em vez de 404 a busca cai para o caminho de
+categoria: uma tabela leva o termo digitado ao tipo de comércio que vende
+aquilo, e o OpenStreetMap devolve essas lojas no raio. Vem sem foto, sem código
+de barras e sem preço, e `resumo.modo` diz `"categoria"` justamente para o
+cliente não confundir com o caminho completo.
+
+```jsonc
+{
+  "produto": null,
+  "categoria": { "id": "autopecas", "rotulo": "Auto peças e oficinas" },
+  "ondeTem": [
+    { "nome": "Auto Peças Central", "tipo": "car_parts", "distanciaTexto": "380 m", "preco": null }
+  ],
+  "resumo": { "lojasNoRaio": 9, "lojasComPreco": 0, "menorPreco": null, "modo": "categoria" }
+}
+```
+
+O 404 continua existindo, mas ficou para o que ele deveria ser desde o começo: o
+termo não bate com produto **nem** com tipo de loja conhecido.
+
+Tem um detalhe que só apareceu testando. A busca do Open Food Facts é generosa e
+tenta achar alguma coisa de qualquer jeito, então procurar "parafuso" podia
+voltar com uma bolacha. Aceitar calado faria quem procura parafuso receber
+bolacha, que é pior do que receber a ferragem da esquina sem preço. Por isso o
+produto que vem de fora passa por um teste de palavra em comum com o termo antes
+de ser aceito, e quem não passa cai para a categoria.
 
 ```jsonc
 {
@@ -167,6 +192,29 @@ Open Food Facts e decide onde procurar:
 { quando: /pet|cat-food|dog-food/, lojas: ['pet', 'supermarket'] },
 ```
 
+Consultar o mapa de verdade antes de escrever essa tabela achou um erro que eu
+não teria achado sozinho. Num raio de 3 km do centro de Belo Horizonte o
+OpenStreetMap tem **65 farmácias como `amenity=pharmacy` e só 4 como
+`shop=chemist`**. A consulta original só olhava `shop`, então farmácia estava
+praticamente invisível para quem buscasse remédio. Hoje o filtro aceita chave e
+valor, e não só `shop`.
+
+### A mesma tabela nos dois lados, sem copiar na mão
+
+A demonstração roda no GitHub Pages, sem servidor, então ela precisa classificar
+o termo sozinha no navegador. Duas cópias da mesma tabela é garantia de
+divergirem na primeira mudança, então a tabela mora num lugar só, no TypeScript,
+e `npm run categorias:web` gera o JSON que a página baixa. Um teste compara os
+dois e quebra se alguém esquecer de rodar o gerador.
+
+A função que dá a nota ainda é duplicada, porque uma roda em Node e a outra no
+navegador. Aí tem um teste que **arranca a função de dentro do HTML** e cobra
+dela a mesma resposta que a API dá, para a mesma lista de termos. Foi ele que
+pegou a diferença real: a versão do navegador testava o fim da string com
+`indexOf` e aritmética, e o `-1` de "não achei" batia por acaso com a conta
+sempre que os dois textos tinham o mesmo tamanho. Na prática, buscar por um
+termo sem sentido devolvia uma loja de jardinagem.
+
 ### Autenticação escrita à mão
 
 Poderia ter plugado um serviço pronto. Escrevi porque o ponto era mostrar que sei
@@ -180,7 +228,7 @@ atacante quais e-mails têm conta aqui.
 
 ### Testes contra Postgres de verdade
 
-26 testes de integração, subindo o app inteiro com supertest. O banco é Postgres
+39 testes de integração, subindo o app inteiro com supertest. O banco é Postgres
 com PostGIS mesmo, no CI também: os testes de distância dependem de `ST_DWithin`,
 então banco falso não provaria nada.
 
@@ -238,6 +286,7 @@ src/
 │   ├── cache.ts            cache com prazo e resgate do cache vencido
 │   ├── openFoodFacts.ts    ficha do produto
 │   ├── openPrices.ts       preços já conhecidos
+│   ├── categorias.ts       do termo digitado ao tipo de loja que vende aquilo
 │   └── overpass.ts         lojas por perto no OpenStreetMap
 ├── modulos/
 │   ├── auth/               cadastro, login, JWT
@@ -247,6 +296,19 @@ src/
 ├── middlewares/            autenticação e tratamento de erro
 └── docs/openapi.ts         especificação servida em /docs
 
-tests/                      26 testes de integração
+web/                        a demonstração que roda no GitHub Pages
+scripts/                    gera o catálogo de categorias da demonstração
+tests/                      39 testes de integração
 ```
 
+## O que eu faria depois
+
+Moderação de preço (hoje qualquer usuário registra qualquer valor), upload da
+foto do preço para armazenamento próprio em vez de aceitar URL, e leitura do
+código de barras pela câmera. Se um dia valer o custo, dá para plugar os dados
+abertos de nota fiscal das SEFAZ estaduais, que é onde mora preço real do varejo
+brasileiro.
+
+## Licença
+
+[MIT](LICENSE). Feito por [Kauan Fernandes](https://github.com/Kauanpfernandes).

@@ -61,7 +61,14 @@ export const openapi = {
           'Junta as fontes externas com o banco local e devolve as lojas do raio ' +
           'ordenadas por preço (as com preço primeiro) e depois por distância. ' +
           'O campo `fontes` diz quais integrações responderam: se alguma estiver ' +
-          'fora do ar, a busca ainda responde com o que as outras deram.',
+          'fora do ar, a busca ainda responde com o que as outras deram.\n\n' +
+          'A resposta tem dois formatos, e `resumo.modo` diz qual veio:\n\n' +
+          '- `produto`: o termo bateu com um item de verdade. Vem com código de ' +
+          'barras, foto e preço quando alguém já registrou.\n' +
+          '- `categoria`: o termo é algo que nenhuma base aberta cataloga, como ' +
+          'peça de carro ou parafuso. Aí `produto` vem nulo, `categoria` diz que ' +
+          'tipo de comércio vende aquilo, e `ondeTem` traz essas lojas por perto, ' +
+          'sem preço.',
         parameters: [
           {
             name: 'q',
@@ -94,13 +101,29 @@ export const openapi = {
         ],
         responses: {
           200: {
-            description: 'Produto encontrado, com as lojas do raio',
+            description:
+              'Produto encontrado, ou a categoria de loja que vende o item',
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
                   properties: {
-                    produto: { type: 'object' },
+                    produto: {
+                      type: 'object',
+                      nullable: true,
+                      description: 'Nulo quando `resumo.modo` é `categoria`.',
+                    },
+                    categoria: {
+                      type: 'object',
+                      nullable: true,
+                      description:
+                        'O tipo de comércio que vende o item. Só vem quando ' +
+                        '`resumo.modo` é `categoria`.',
+                      properties: {
+                        id: { type: 'string', example: 'autopecas' },
+                        rotulo: { type: 'string', example: 'Auto peças e oficinas' },
+                      },
+                    },
                     alternativas: { type: 'array', items: { type: 'object' } },
                     ondeTem: {
                       type: 'array',
@@ -113,6 +136,11 @@ export const openapi = {
                         lojasComPreco: { type: 'integer', example: 3 },
                         menorPreco: { type: 'number', nullable: true, example: 8.49 },
                         raioMetros: { type: 'integer', example: 3000 },
+                        modo: {
+                          type: 'string',
+                          enum: ['produto', 'categoria'],
+                          example: 'produto',
+                        },
                       },
                     },
                     fontes: { type: 'array', items: { type: 'object' } },
@@ -122,7 +150,8 @@ export const openapi = {
             },
           },
           404: {
-            description: 'Nenhum produto bateu com o termo',
+            description:
+              'O termo não bateu com produto nem com tipo de loja conhecido',
             content: { 'application/json': { schema: { $ref: '#/components/schemas/Erro' } } },
           },
           422: { description: 'Parâmetro inválido' },

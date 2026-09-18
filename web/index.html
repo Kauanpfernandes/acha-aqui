@@ -162,11 +162,16 @@ input:focus, select:focus{outline:2px solid var(--accent); outline-offset:-1px; 
     <b>Isto é a demonstração do projeto, rodando só no navegador.</b>
     As buscas de lojas e de preço são reais: batem no OpenStreetMap e no Open Prices
     na hora. O que muda em relação à API é que a busca por nome usa um catálogo de
-    48 produtos que vem junto com a página, porque o Open Food Facts bloqueia busca
+    52 produtos que vem junto com a página, porque o Open Food Facts bloqueia busca
     por nome vinda do navegador. A
     <a href="https://github.com/Kauanpfernandes/acha-aqui">API</a> não tem essa
     limitação: ela busca pelo servidor, guarda em cache e ordena por distância no
     Postgres com PostGIS.
+    <br><br>
+    Dá para procurar <b>comida</b>, que traz foto, código de barras e preço, e também
+    <b>o que não é comida</b>: pneu, parafuso, ração, caderno. Como não existe base
+    aberta de peça de carro do jeito que existe de alimento, esses caem num segundo
+    caminho, que responde o tipo de loja e onde ela fica, sem inventar preço.
   </div>
 
   <div class="card busca">
@@ -222,13 +227,18 @@ var LUGARES = [
 ];
 
 /* Que tipo de loja vende o quê. É a mesma ponte que a API faz entre as
-   categorias do produto e as tags de loja do OpenStreetMap. */
+   categorias do produto e as tags de loja do OpenStreetMap.
+
+   O formato é uma lista de filtros porque nem tudo é `shop`: farmácia no
+   Brasil está mapeada como `amenity=pharmacy`, e uma consulta que só olhasse
+   `shop` acharia quatro farmácias no centro de BH em vez de sessenta e cinco. */
 var LOJAS_POR_TIPO = {
-  mercado: ['supermarket','convenience','grocery','general'],
-  bebida:  ['supermarket','convenience','beverages','alcohol'],
-  padaria: ['bakery','supermarket','convenience'],
-  limpeza: ['supermarket','chemist','convenience'],
-  farmacia:['chemist','supermarket']
+  mercado: [{ chave:'shop', valores:['supermarket','convenience','grocery','general'] }],
+  bebida:  [{ chave:'shop', valores:['supermarket','convenience','beverages','alcohol'] }],
+  padaria: [{ chave:'shop', valores:['bakery','supermarket','convenience'] }],
+  limpeza: [{ chave:'shop', valores:['supermarket','chemist','convenience'] }],
+  farmacia:[{ chave:'amenity', valores:['pharmacy'] },
+            { chave:'shop', valores:['chemist','supermarket'] }]
 };
 
 var URL_OFF = 'https://world.openfoodfacts.org/api/v2/product/';
@@ -281,16 +291,54 @@ function buscarJson(url, opcoes, ms){
 /* ==================== catálogo ==================== */
 
 var catalogo = [];
+var categorias = [];
 
 function carregarCatalogo(){
   // 'no-cache' obriga o navegador a confirmar com o servidor antes de usar a
   // cópia guardada. Sem isso, quem já visitou continua com o catálogo antigo
   // depois de uma atualização, e a busca passa a achar o produto errado.
-  return buscarJson('catalogo.json', { cache: 'no-cache' }).then(function(j){
-    catalogo = j.produtos || [];
+  //
+  // categorias.json é gerado a partir do mesmo arquivo TypeScript que a API
+  // usa (scripts/gerar-categorias-web.ts), então a demonstração e a API
+  // classificam "pneu" do mesmo jeito, sem tabela repetida à mão.
+  return Promise.all([
+    buscarJson('catalogo.json', { cache: 'no-cache' }),
+    buscarJson('categorias.json', { cache: 'no-cache' }).catch(function(){ return { categorias: [] }; })
+  ]).then(function(r){
+    catalogo = r[0].produtos || [];
+    categorias = r[1].categorias || [];
     montarSugestoes();
     montarDatalist();
   });
+}
+
+/* Mesma regra da API: nota por igualdade, por palavra inteira e por prefixo,
+   tudo sem acento porque quem digita com pressa escreve "racao" e "oculos". */
+function categoriaDoTermo(termo){
+  var t = semAcento(termo).trim();
+  if(t.length < 2) return null;
+
+  var melhor = null;
+
+  categorias.forEach(function(cat){
+    (cat.termos || []).forEach(function(bruto){
+      var alvo = semAcento(bruto);
+      var nota = 0;
+
+      // O `slice` no lugar de um indexOf com aritmética: quando o termo não
+      // aparece, indexOf devolve -1, e -1 batia por acaso com a conta do fim
+      // da string sempre que os dois tinham o mesmo tamanho. Era assim que
+      // "xpto que nao existe" virava jardinagem.
+      if(alvo === t) nota = 100;
+      else if(t.indexOf(alvo + ' ') === 0 || t.slice(-(alvo.length + 1)) === ' ' + alvo) nota = 80;
+      else if(alvo.indexOf(t) === 0 && t.length >= 4) nota = 60;
+      else if(t.indexOf(alvo) > -1 && alvo.length >= 5) nota = 50;
+
+      if(nota && (!melhor || nota > melhor.nota)) melhor = { cat: cat, nota: nota };
+    });
+  });
+
+  return melhor ? melhor.cat : null;
 }
 
 function procurar(termo){
@@ -310,9 +358,17 @@ function procurar(termo){
     }
     if(nome.indexOf(t) > -1) return 60;
     if(marca.indexOf(t) > -1) return 40;
-    // cada palavra do termo que aparece no nome conta ponto
-    var palavras = t.split(/\s+/).filter(function(x){ return x.length > 2; });
-    var acertos = palavras.filter(function(x){ return nome.indexOf(x) > -1; }).length;
+
+    // Cada palavra do termo que aparece no nome conta ponto, mas palavra
+    // inteira, não pedaço: procurar "que" dentro de "coqueiro" fazia
+    // "xpto que nao existe" devolver uma lata de sardinha.
+    var doNome = nome.split(/[^a-z0-9]+/).filter(Boolean);
+    var palavras = t.split(/\s+/).filter(function(x){ return x.length >= 4; });
+    var acertos = palavras.filter(function(x){
+      return doNome.some(function(n){
+        return n === x || (x.length >= 4 && n.indexOf(x) === 0);
+      });
+    }).length;
     if(acertos) return 10 + acertos * 5;
     return 0;
   };
@@ -325,7 +381,10 @@ function procurar(termo){
 }
 
 function montarSugestoes(){
-  var exemplos = ['leite condensado', 'arroz', 'café', 'macarrão', 'refrigerante', 'pão de forma', 'leite bio'];
+  // Metade comida (a busca completa, com preço) e metade não (a busca por
+  // categoria), para quem chega saber logo que existem os dois caminhos.
+  var exemplos = ['leite condensado', 'café', 'refrigerante', 'leite bio',
+                  'pneu', 'parafuso', 'ração', 'caderno', 'óculos'];
   el('sugestoes').innerHTML = exemplos.map(function(t){
     return '<button class="chip" data-termo="' + esc(t) + '">' + esc(t) + '</button>';
   }).join('');
@@ -336,6 +395,11 @@ function montarDatalist(){
   var termos = [];
   catalogo.forEach(function(p){
     (p.termos || []).forEach(function(t){
+      if(!vistos[t]){ vistos[t] = 1; termos.push(t); }
+    });
+  });
+  categorias.forEach(function(c){
+    (c.termos || []).forEach(function(t){
       if(!vistos[t]){ vistos[t] = 1; termos.push(t); }
     });
   });
@@ -382,11 +446,13 @@ function precosDoProduto(codigo){
     });
 }
 
-function lojasPorPerto(lat, lon, raio, tipos){
-  var filtro = tipos.join('|');
-  var consulta = '[out:json][timeout:20];' +
-    'nwr["shop"~"^(' + filtro + ')$"](around:' + raio + ',' + lat + ',' + lon + ');' +
-    'out center tags 80;';
+function lojasPorPerto(lat, lon, raio, filtros){
+  var partes = filtros.filter(function(f){ return f.valores.length; }).map(function(f){
+    return 'nwr["' + f.chave + '"~"^(' + f.valores.join('|') + ')$"]' +
+      '(around:' + raio + ',' + lat + ',' + lon + ');';
+  }).join('');
+
+  var consulta = '[out:json][timeout:20];(' + partes + ');out center tags 80;';
 
   return buscarJson(URL_OVERPASS, {
     method: 'POST',
@@ -402,7 +468,7 @@ function lojasPorPerto(lat, lon, raio, tipos){
       return {
         osmId: e.id,
         nome: tags.name,
-        tipo: tags.shop || 'loja',
+        tipo: tags.shop || tags.amenity || 'loja',
         endereco: rua ? (rua + (num ? ', ' + num : '')) : null,
         lat: la, lon: lo
       };
@@ -468,6 +534,12 @@ function buscar(){
 
   var achados = procurar(termo);
   if(!achados.length){
+    // Não é comida conhecida. Ainda dá para responder a pergunta principal:
+    // "peça de carro" não tem código de barras nem preço em base aberta
+    // nenhuma, mas o OpenStreetMap sabe onde ficam as auto peças.
+    var cat = categoriaDoTermo(termo);
+    if(cat) return buscarPorCategoria(termo, cat);
+
     mostrarErro('Não achei "' + termo + '" no catálogo da demonstração. Tente um dos exemplos abaixo do campo.');
     el('resultado').innerHTML = '';
     return;
@@ -487,7 +559,7 @@ function buscar(){
 
     passo('consultando OpenStreetMap, Open Food Facts e Open Prices');
 
-    var tipos = LOJAS_POR_TIPO[produto.tipo] || LOJAS_POR_TIPO.mercado;
+    var filtros = LOJAS_POR_TIPO[produto.tipo] || LOJAS_POR_TIPO.mercado;
 
     // As três fontes em paralelo. Nenhuma delas pode derrubar a busca:
     // cada uma cai para um valor de reserva e o problema vira um aviso.
@@ -500,7 +572,7 @@ function buscar(){
         .then(function(p){ fontes.push({ nome:'Open Prices', ok:true }); return p; })
         .catch(function(e){ fontes.push({ nome:'Open Prices', ok:false, detalhe:e.message }); return []; }),
 
-      lojasPorPerto(onde.lat, onde.lon, raio, tipos)
+      lojasPorPerto(onde.lat, onde.lon, raio, filtros)
         .then(function(l){ fontes.push({ nome:'OpenStreetMap', ok:true }); return l; })
         .catch(function(e){ fontes.push({ nome:'OpenStreetMap', ok:false, detalhe:e.message }); return []; })
     ];
@@ -515,6 +587,89 @@ function buscar(){
     buscando = false;
     el('buscar').disabled = false;
   });
+}
+
+/* A busca de quem procura algo que não é comida.
+
+   Uma fonte só, e por um motivo honesto: não existe base aberta de peça de
+   carro ou de parafuso como existe de alimento. O que dá para afirmar é em
+   que tipo de loja aquilo se compra, e quais dessas lojas estão perto. A tela
+   diz isso em vez de fingir que achou um produto. */
+function buscarPorCategoria(termo, cat){
+  var raio = parseInt(el('raio').value, 10);
+  var fontes = [];
+
+  buscando = true;
+  el('buscar').disabled = true;
+  passo('descobrindo onde você está');
+
+  coordenadaEscolhida().then(function(onde){
+    el('local').innerHTML = 'Procurando num raio de <b>' + distanciaTexto(raio) +
+      '</b> a partir de <b>' + esc(onde.rotulo) + '</b>.';
+
+    passo('consultando OpenStreetMap');
+
+    return lojasPorPerto(onde.lat, onde.lon, raio, cat.tags)
+      .then(function(l){ fontes.push({ nome:'OpenStreetMap', ok:true }); return l; })
+      .catch(function(e){ fontes.push({ nome:'OpenStreetMap', ok:false, detalhe:e.message }); return []; })
+      .then(function(lojas){
+        montarCategoria(termo, cat, lojas, onde, raio, fontes);
+      });
+  }).catch(function(e){
+    mostrarErro(e.message || 'Algo deu errado.');
+    el('resultado').innerHTML = '';
+  }).finally(function(){
+    buscando = false;
+    el('buscar').disabled = false;
+  });
+}
+
+function montarCategoria(termo, cat, lojas, onde, raio, fontes){
+  var comDistancia = lojas.map(function(l){
+    return Object.assign({}, l, {
+      distancia: distancia(onde.lat, onde.lon, l.lat, l.lon)
+    });
+  }).filter(function(l){
+    return l.distancia <= raio;
+  }).sort(function(a, b){
+    return a.distancia - b.distancia;
+  });
+
+  var html = '<div class="card">';
+
+  html += '<div class="produto">';
+  html += '<div class="meta"><div class="nome">' + esc(cat.rotulo) + '</div>' +
+    '<div class="det">para "' + esc(termo) + '" · sem código de barras, porque ' +
+    'nenhuma base aberta cataloga esse tipo de item</div></div>';
+  html += '</div>';
+
+  html += '<div class="resumo">' +
+    tile('Lojas no raio', comDistancia.length) +
+    tile('Com preço registrado', '—') +
+    tile('Tipo de comércio', cat.id) +
+    '</div>';
+
+  if(!comDistancia.length){
+    html += '<div class="vazio">Nenhuma loja desse tipo no raio escolhido.' +
+      '<br>Tente aumentar o raio ou escolher outra cidade.</div>';
+  } else {
+    html += '<div class="lojas">' + comDistancia.slice(0, 40).map(cartaoDaLoja).join('') + '</div>';
+  }
+
+  html += '<div class="dica">Esta busca veio do caminho de <b>categoria</b>. ' +
+    'Existe base aberta de alimento, com foto, código de barras e preço, mas não ' +
+    'existe equivalente para peça de carro, parafuso ou ração. Em vez de deixar a ' +
+    'busca sem resposta, o Acha Aqui responde a metade que dá para sustentar: o tipo ' +
+    'de loja e onde ela fica. Para ver a busca completa, com preço, tente ' +
+    '<b>leite condensado</b> ou <b>café</b>.</div>';
+
+  html += '<div class="fontes">' + fontes.map(function(f){
+    return '<span class="fonte ' + (f.ok ? 'ok' : 'falhou') + '">' +
+      esc(f.nome) + ': ' + (f.ok ? 'respondeu' : 'não respondeu') + '</span>';
+  }).join('') + '</div>';
+
+  html += '</div>';
+  el('resultado').innerHTML = html;
 }
 
 /* ==================== montagem da resposta ==================== */

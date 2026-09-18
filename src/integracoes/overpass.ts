@@ -65,26 +65,52 @@ const CATEGORIA_PARA_LOJA: Array<{ quando: RegExp; lojas: string[] }> = [
 
 const LOJAS_PADRAO = ['supermarket', 'convenience', 'grocery', 'general'];
 
-export function lojasParaCategorias(categorias: string[]): string[] {
+export function lojasParaCategorias(categorias: string[]): FiltroOsm[] {
   const texto = categorias.join(' ').toLowerCase();
   const encontradas = CATEGORIA_PARA_LOJA.filter((r) => r.quando.test(texto))
     .flatMap((r) => r.lojas);
 
-  return [...new Set([...encontradas, ...LOJAS_PADRAO])];
+  const lojas = [...new Set([...encontradas, ...LOJAS_PADRAO])];
+  const filtros: FiltroOsm[] = [{ chave: 'shop', valores: lojas }];
+
+  // Remédio e afins: farmácia no Brasil é amenity, não shop.
+  if (/medicament|pharmac|dietary-supplement/.test(texto)) {
+    filtros.push({ chave: 'amenity', valores: ['pharmacy'] });
+  }
+
+  return filtros;
+}
+
+export interface FiltroOsm {
+  chave: string;
+  valores: string[];
 }
 
 function montarConsulta(
   lat: number,
   lon: number,
   raioMetros: number,
-  tiposDeLoja: string[],
+  filtros: FiltroOsm[],
 ): string {
-  const filtro = tiposDeLoja.join('|');
   // `nwr` pega nó, caminho e relação de uma vez; `out center` devolve um ponto
   // único mesmo para polígonos (um supermercado desenhado como área).
+  //
+  // Os filtros vão num grupo `( ... );` porque nem tudo é `shop`: farmácia no
+  // Brasil está mapeada como `amenity=pharmacy`, e uma consulta que só olhasse
+  // `shop` acharia 4 farmácias no centro de BH em vez de 65.
+  const partes = filtros
+    .filter((f) => f.valores.length > 0)
+    .map(
+      (f) =>
+        `  nwr["${f.chave}"~"^(${f.valores.join('|')})$"](around:${raioMetros},${lat},${lon});`,
+    )
+    .join('\n');
+
   return `[out:json][timeout:25];
-nwr["shop"~"^(${filtro})$"](around:${raioMetros},${lat},${lon});
-out center tags 60;`;
+(
+${partes}
+);
+out center tags 80;`;
 }
 
 function converter(
@@ -108,7 +134,7 @@ function converter(
     osmTipo: tipoOsm,
     osmId: elemento.id,
     nome,
-    tipo: tags['shop'] ?? 'loja',
+    tipo: tags['shop'] ?? tags['amenity'] ?? 'loja',
     endereco,
     cidade: tags['addr:city'] ?? null,
     uf: tags['addr:state'] ?? null,
@@ -128,17 +154,21 @@ export async function lojasPorPerto(
   lat: number,
   lon: number,
   raioMetros: number,
-  tiposDeLoja: string[] = LOJAS_PADRAO,
+  filtros: FiltroOsm[] = [{ chave: 'shop', valores: LOJAS_PADRAO }],
 ): Promise<LocalExterno[]> {
   // Arredondar a coordenada da chave (~100m) faz duas buscas quase no mesmo
   // lugar reaproveitarem o mesmo cache, em vez de gerar uma chave nova por metro.
-  const chave = `overpass:${lat.toFixed(3)}:${lon.toFixed(3)}:${raioMetros}:${tiposDeLoja.sort().join(',')}`;
+  const assinatura = filtros
+    .map((f) => `${f.chave}=${[...f.valores].sort().join('+')}`)
+    .sort()
+    .join(';');
+  const chave = `overpass:${lat.toFixed(3)}:${lon.toFixed(3)}:${raioMetros}:${assinatura}`;
 
   const { dado } = await comCache<LocalExterno[]>(
     chave,
     env.CACHE_MINUTOS_LOCAL,
     async () => {
-      const consulta = montarConsulta(lat, lon, raioMetros, tiposDeLoja);
+      const consulta = montarConsulta(lat, lon, raioMetros, filtros);
       const resposta = await buscarJson<RespostaOverpass>(env.OVERPASS_URL, {
         fonte: 'OpenStreetMap (Overpass)',
         metodo: 'POST',

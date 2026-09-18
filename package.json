@@ -12,6 +12,7 @@
     "build": "tsc -p tsconfig.json && node scripts/copiar-migrations.mjs",
     "start": "node dist/server.js",
     "migrate": "tsx src/db/migrar.ts",
+    "categorias:web": "tsx scripts/gerar-categorias-web.ts",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "tsc --noEmit"

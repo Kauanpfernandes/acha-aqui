@@ -71,7 +71,11 @@ export async function porPerto(
   lon: number,
   raioMetros: number,
   limite = 50,
+  tipos: string[] | null = null,
 ): Promise<LocalComDistancia[]> {
+  // O filtro por tipo entra no SQL, e não depois em JavaScript, porque o
+  // `limit` corta antes: filtrar em memória as 50 mais próximas devolveria
+  // zero auto peças num centro cheio de padaria.
   return consultar<LocalComDistancia>(
     `with ponto as (
        select ST_SetSRID(ST_MakePoint($2, $1), 4326)::geography as g
@@ -83,9 +87,10 @@ export async function porPerto(
             round(ST_Distance(l.geom, ponto.g)::numeric) as distancia_metros
        from locais l, ponto
       where ST_DWithin(l.geom, ponto.g, $3)
+        and ($5::text[] is null or l.tipo = any($5))
       order by l.geom <-> ponto.g
       limit $4`,
-    [lat, lon, raioMetros, limite],
+    [lat, lon, raioMetros, limite, tipos],
   );
 }
 

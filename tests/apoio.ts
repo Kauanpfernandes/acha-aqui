@@ -41,6 +41,40 @@ export const LOJAS_OVERPASS = [
   },
 ];
 
+/**
+ * Lojas que não são mercado, para os testes da busca por categoria.
+ *
+ * A farmácia entra como `amenity=pharmacy` de propósito: é assim que ela está
+ * mapeada no Brasil, e uma consulta que só olhasse `shop` acharia quatro
+ * farmácias no centro de BH em vez de sessenta e cinco.
+ */
+export const LOJAS_AUTOPECAS = [
+  {
+    type: 'node',
+    id: 2001,
+    lat: -19.9235,
+    lon: -43.9445,
+    tags: { name: 'Auto Peças Central', shop: 'car_parts', 'addr:city': 'Belo Horizonte' },
+  },
+  {
+    type: 'node',
+    id: 2002,
+    lat: -19.93,
+    lon: -43.95,
+    tags: { name: 'Oficina do Zé', shop: 'car_repair' },
+  },
+];
+
+export const LOJAS_FARMACIA = [
+  {
+    type: 'node',
+    id: 3001,
+    lat: -19.9233,
+    lon: -43.9448,
+    tags: { name: 'Drogaria da Esquina', amenity: 'pharmacy', 'addr:city': 'Belo Horizonte' },
+  },
+];
+
 interface OpcoesFalsas {
   offFalha?: boolean;
   overpassFalha?: boolean;
@@ -59,10 +93,13 @@ interface OpcoesFalsas {
  */
 export function simularApisExternas(opcoes: OpcoesFalsas = {}) {
   const chamadas: string[] = [];
+  /** O corpo de cada POST, para checar que consulta foi montada. */
+  const corpos: string[] = [];
 
-  const falso = vi.fn(async (entrada: string | URL | Request) => {
+  const falso = vi.fn(async (entrada: string | URL | Request, init?: RequestInit) => {
     const url = String(entrada);
     chamadas.push(url);
+    if (typeof init?.body === 'string') corpos.push(decodeURIComponent(init.body));
 
     // A ordem importa: prices.openfoodfacts.org tambem contem "openfoodfacts.org".
     if (url.includes('prices.openfoodfacts')) {
@@ -87,7 +124,7 @@ export function simularApisExternas(opcoes: OpcoesFalsas = {}) {
   });
 
   vi.stubGlobal('fetch', falso);
-  return { chamadas, falso };
+  return { chamadas, corpos, falso };
 }
 
 function resposta(corpo: unknown): Response {
