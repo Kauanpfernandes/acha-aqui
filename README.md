@@ -236,14 +236,3 @@ src/
 tests/                      26 testes de integração
 ```
 
-## O que eu faria depois
-
-Moderação de preço (hoje qualquer usuário registra qualquer valor), upload da
-foto do preço para armazenamento próprio em vez de aceitar URL, e leitura do
-código de barras pela câmera. Se um dia valer o custo, dá para plugar os dados
-abertos de nota fiscal das SEFAZ estaduais, que é onde mora preço real do varejo
-brasileiro.
-
-## Licença
-
-[MIT](LICENSE). Feito por [Kauan Fernandes](https://github.com/Kauanpfernandes).
