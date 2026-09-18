@@ -238,7 +238,6 @@ var URL_OVERPASS = 'https://overpass-api.de/api/interpreter';
 /* ==================== utilidades ==================== */
 
 var el = function(id){ return document.getElementById(id); };
-var BRL = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
 
 function semAcento(s){
   return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
@@ -580,7 +579,7 @@ function montar(produto, ficha, precos, lojas, onde, raio, fontes, alternativas)
   html += '<div class="resumo">' +
     tile('Lojas no raio', comDistancia.length) +
     tile('Com preço registrado', comPreco.length) +
-    tile('Menor preço', menor ? BRL.format(converter(menor)) : '—', !!menor) +
+    tile('Menor preço', menor ? formatarDinheiro(menor.valor, menor.moeda) : '—', !!menor) +
     '</div>';
 
   if(!comDistancia.length){
@@ -617,10 +616,17 @@ function tile(rotulo, valor, positivo){
     '<div class="val' + (positivo ? ' pos' : '') + '">' + esc(valor) + '</div></div>';
 }
 
-/* O Open Prices guarda em euro a maior parte dos registros. Mostrar "R$" num
-   preço que veio em EUR seria mentira, então a moeda vai junto. */
-function converter(preco){
-  return preco.valor;
+/* O Open Prices guarda a maior parte dos registros em euro. Mostrar "R$" num
+   preço que veio em EUR seria mentira, então cada valor é formatado na moeda
+   em que foi registrado. Nada de conversão automática: cotação muda todo dia e
+   inventar um número aqui seria pior que mostrar a moeda original. */
+function formatarDinheiro(valor, moeda){
+  moeda = moeda || 'BRL';
+  try {
+    return new Intl.NumberFormat('pt-BR', { style:'currency', currency: moeda }).format(valor);
+  } catch(e){
+    return valor.toFixed(2).replace('.', ',') + ' ' + moeda;
+  }
 }
 
 function cartaoDaLoja(l){
@@ -628,10 +634,7 @@ function cartaoDaLoja(l){
 
   var preco = '';
   if(l.preco){
-    var moeda = l.preco.moeda || 'BRL';
-    var valor = moeda === 'BRL'
-      ? BRL.format(l.preco.valor)
-      : new Intl.NumberFormat('pt-BR', { style:'currency', currency: moeda }).format(l.preco.valor);
+    var valor = formatarDinheiro(l.preco.valor, l.preco.moeda);
     preco = '<div class="p"><div class="v">' + esc(valor) + '</div>' +
       '<div class="q">' + (l.preco.data ? 'registrado em ' + esc(formatarData(l.preco.data)) : 'sem data') + '</div></div>';
   } else {
