@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#f4f6f4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101312" media="(prefers-color-scheme: dark)">
+<title>Acha Aqui — demonstração</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%93%8D%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --page:#f4f6f4; --surface:#fbfcfb; --surface-2:#eef1ee;
+  --ink:#131917; --ink-2:#5a6360; --muted:#818b87;
+  --line:#e2e7e3; --line-2:#d2d9d4;
+  --accent:#145f55; --accent-soft:#e2efec; --on-accent:#fff;
+  --pos:#1d7a4c; --neg:#b4402f;
+  --shadow:0 1px 2px rgba(16,24,20,.05), 0 4px 14px rgba(16,24,20,.05);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --page:#101312; --surface:#181c1b; --surface-2:#212624;
+    --ink:#e9eeec; --ink-2:#a3adaa; --muted:#7f8a88;
+    --line:#252b29; --line-2:#323936;
+    --accent:#4bb5a4; --accent-soft:#17302c; --on-accent:#0a1210;
+    --pos:#54c98a; --neg:#e4735e;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --page:#101312; --surface:#181c1b; --surface-2:#212624;
+  --ink:#e9eeec; --ink-2:#a3adaa; --muted:#7f8a88;
+  --line:#252b29; --line-2:#323936;
+  --accent:#4bb5a4; --accent-soft:#17302c; --on-accent:#0a1210;
+  --pos:#54c98a; --neg:#e4735e;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+}
+*{box-sizing:border-box; margin:0; padding:0}
+body{
+  background:var(--page); color:var(--ink);
+  font-family:"Archivo", system-ui, -apple-system, sans-serif;
+  font-size:15px; line-height:1.55;
+  padding:0 16px calc(48px + env(safe-area-inset-bottom,0px));
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:940px; margin:0 auto; padding-top:32px}
+
+h1{font-family:"Fraunces", Georgia, serif; font-size:30px; font-weight:600; letter-spacing:-.01em}
+h2{font-family:"Fraunces", Georgia, serif; font-size:18px; font-weight:600}
+.sub{color:var(--ink-2); font-size:14.5px; margin-top:4px}
+
+.topo{display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap}
+.iconsq{background:var(--surface); border:1px solid var(--line); color:var(--ink-2);
+  width:38px; height:38px; border-radius:10px; cursor:pointer; font-size:15px; flex:0 0 auto}
+.iconsq:hover{border-color:var(--line-2)}
+
+.aviso{
+  margin-top:22px; padding:14px 16px; border:1px dashed var(--line-2);
+  border-radius:12px; background:var(--accent-soft); color:var(--ink);
+  font-size:13.5px; line-height:1.6;
+}
+.aviso b{font-weight:600}
+.aviso a{color:var(--accent)}
+
+.card{background:var(--surface); border:1px solid var(--line); border-radius:14px;
+  padding:18px; box-shadow:var(--shadow)}
+.busca{margin-top:20px}
+.linha{display:flex; gap:10px; flex-wrap:wrap; align-items:flex-end}
+.campo{flex:1 1 260px; min-width:0}
+label{display:block; font-size:12px; font-weight:600; color:var(--ink-2); margin-bottom:5px}
+input[type=text], select{
+  width:100%; padding:11px 12px; border:1px solid var(--line-2); border-radius:10px;
+  background:var(--page); color:var(--ink); font:inherit; font-size:14.5px}
+input:focus, select:focus{outline:2px solid var(--accent); outline-offset:-1px; border-color:transparent}
+.btn{background:var(--accent); color:var(--on-accent); border:0; border-radius:10px;
+  padding:11px 18px; font:inherit; font-weight:600; font-size:14.5px; cursor:pointer; white-space:nowrap}
+.btn:disabled{opacity:.55; cursor:default}
+.btn.ghost{background:var(--surface); color:var(--ink); border:1px solid var(--line-2)}
+
+.sugestoes{margin-top:12px; display:flex; gap:7px; flex-wrap:wrap}
+.chip{background:var(--surface-2); border:1px solid var(--line); color:var(--ink-2);
+  border-radius:999px; padding:6px 12px; font-size:12.5px; cursor:pointer}
+.chip:hover{border-color:var(--accent); color:var(--accent)}
+
+.local{margin-top:12px; font-size:13px; color:var(--ink-2)}
+.local b{color:var(--ink); font-weight:600}
+
+.erro{color:var(--neg); font-size:13.5px; margin-top:12px}
+
+.resultado{margin-top:26px}
+.produto{display:flex; gap:16px; align-items:center; flex-wrap:wrap}
+.produto img{width:64px; height:64px; object-fit:contain; border-radius:10px;
+  background:var(--surface-2); flex:0 0 auto}
+.produto .meta{flex:1 1 240px; min-width:0}
+.produto .nome{font-family:"Fraunces", Georgia, serif; font-size:19px; font-weight:600}
+.produto .det{color:var(--ink-2); font-size:13.5px; margin-top:2px}
+
+.resumo{display:flex; gap:10px; flex-wrap:wrap; margin-top:16px}
+.tile{flex:1 1 150px; background:var(--surface-2); border-radius:11px; padding:12px 14px}
+.tile .lab{font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.tile .val{font-family:"Fraunces", Georgia, serif; font-size:21px; font-weight:600; margin-top:2px}
+.tile .val.pos{color:var(--pos)}
+
+.lojas{margin-top:18px; display:grid; gap:10px}
+.loja{display:flex; gap:14px; align-items:center; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; padding:13px 15px}
+.loja.temPreco{border-color:var(--accent)}
+.loja .info{flex:1 1 auto; min-width:0}
+.loja .n{font-weight:600; font-size:14.5px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.loja .d{color:var(--ink-2); font-size:12.5px; margin-top:2px}
+.loja .p{text-align:right; flex:0 0 auto}
+.loja .p .v{font-family:"Fraunces", Georgia, serif; font-size:18px; font-weight:600; color:var(--pos)}
+.loja .p .q{font-size:11.5px; color:var(--muted)}
+.loja .p .sem{font-size:12.5px; color:var(--muted)}
+.loja a{color:var(--accent); font-size:12.5px; text-decoration:none; white-space:nowrap}
+.loja a:hover{text-decoration:underline}
+.badge{display:inline-block; background:var(--accent-soft); color:var(--accent);
+  border-radius:999px; padding:1px 8px; font-size:11px; font-weight:600; margin-left:6px}
+
+.fontes{margin-top:22px; display:flex; gap:8px; flex-wrap:wrap}
+.fonte{font-size:12px; border-radius:999px; padding:4px 11px; border:1px solid var(--line-2); color:var(--ink-2)}
+.fonte.ok{border-color:var(--pos); color:var(--pos)}
+.fonte.falhou{border-color:var(--neg); color:var(--neg)}
+
+.vazio{color:var(--ink-2); font-size:14px; text-align:center; padding:26px 0}
+.carregando{color:var(--ink-2); font-size:14px; text-align:center; padding:26px 0}
+.passo{font-size:12.5px; color:var(--muted); text-align:center; margin-top:6px}
+
+.rodape{margin-top:38px; padding-top:18px; border-top:1px solid var(--line);
+  color:var(--muted); font-size:12.5px; display:flex; gap:14px; flex-wrap:wrap; justify-content:space-between}
+.rodape a{color:var(--accent)}
+
+@media (max-width:600px){
+  h1{font-size:25px}
+  .wrap{padding-top:22px}
+  .loja{flex-wrap:wrap}
+  .loja .p{text-align:left; width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topo">
+    <div>
+      <h1>Acha Aqui</h1>
+      <p class="sub">Digite um produto e veja onde comprar perto de você.</p>
+    </div>
+    <button class="iconsq" id="tema" aria-label="Alternar tema claro e escuro" title="Tema">◐</button>
+  </div>
+
+  <div class="aviso">
+    <b>Isto é a demonstração do projeto, rodando só no navegador.</b>
+    As buscas de lojas e de preço são reais: batem no OpenStreetMap e no Open Prices
+    na hora. O que muda em relação à API é que a busca por nome usa um catálogo de
+    48 produtos que vem junto com a página, porque o Open Food Facts bloqueia busca
+    por nome vinda do navegador. A
+    <a href="https://github.com/Kauanpfernandes/acha-aqui">API</a> não tem essa
+    limitação: ela busca pelo servidor, guarda em cache e ordena por distância no
+    Postgres com PostGIS.
+  </div>
+
+  <div class="card busca">
+    <div class="linha">
+      <div class="campo">
+        <label for="q">O que você procura</label>
+        <input type="text" id="q" placeholder="leite condensado, arroz, café..." autocomplete="off" list="lista">
+        <datalist id="lista"></datalist>
+      </div>
+      <div class="campo" style="flex:0 1 170px">
+        <label for="onde">Onde você está</label>
+        <select id="onde"></select>
+      </div>
+      <div class="campo" style="flex:0 1 130px">
+        <label for="raio">Raio</label>
+        <select id="raio">
+          <option value="1000">1 km</option>
+          <option value="3000" selected>3 km</option>
+          <option value="5000">5 km</option>
+          <option value="10000">10 km</option>
+        </select>
+      </div>
+      <button class="btn" id="buscar">Buscar</button>
+    </div>
+
+    <div class="sugestoes" id="sugestoes"></div>
+    <div class="local" id="local"></div>
+    <div class="erro" id="erro" hidden></div>
+  </div>
+
+  <div class="resultado" id="resultado"></div>
+
+  <div class="rodape">
+    <span>Demonstração do <a href="https://github.com/Kauanpfernandes/acha-aqui">Acha Aqui</a>, por <a href="https://github.com/Kauanpfernandes">Kauan Fernandes</a>.</span>
+    <span>Dados: OpenStreetMap, Open Food Facts e Open Prices.</span>
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ==================== configuração ==================== */
+
+var LUGARES = [
+  { id:'bh',  nome:'Belo Horizonte, Centro', lat:-19.9227, lon:-43.9451 },
+  { id:'sp',  nome:'São Paulo, Paulista',    lat:-23.5614, lon:-46.6559 },
+  { id:'rj',  nome:'Rio de Janeiro, Copacabana', lat:-22.9711, lon:-43.1822 },
+  { id:'poa', nome:'Porto Alegre, Centro',   lat:-30.0318, lon:-51.2300 },
+  { id:'rec', nome:'Recife, Boa Viagem',     lat:-8.1207,  lon:-34.9007 },
+  { id:'meu', nome:'Usar minha localização', lat:null, lon:null }
+];
+
+/* Que tipo de loja vende o quê. É a mesma ponte que a API faz entre as
+   categorias do produto e as tags de loja do OpenStreetMap. */
+var LOJAS_POR_TIPO = {
+  mercado: ['supermarket','convenience','grocery','general'],
+  bebida:  ['supermarket','convenience','beverages','alcohol'],
+  padaria: ['bakery','supermarket','convenience'],
+  limpeza: ['supermarket','chemist','convenience'],
+  farmacia:['chemist','supermarket']
+};
+
+var URL_OFF = 'https://world.openfoodfacts.org/api/v2/product/';
+var URL_PRECOS = 'https://prices.openfoodfacts.org/api/v1/prices';
+var URL_OVERPASS = 'https://overpass-api.de/api/interpreter';
+
+/* ==================== utilidades ==================== */
+
+var el = function(id){ return document.getElementById(id); };
+var BRL = new Intl.NumberFormat('pt-BR', { style:'currency', currency:'BRL' });
+
+function semAcento(s){
+  return String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+}
+
+function esc(s){
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  });
+}
+
+function distanciaTexto(m){
+  if(m < 1000) return Math.round(m) + ' m';
+  return (m/1000).toFixed(1).replace('.', ',') + ' km';
+}
+
+/* Haversine: distância entre dois pontos sobre a esfera, em metros.
+   Na API isso é ST_Distance do PostGIS; aqui, sem banco, é na mão. */
+function distancia(lat1, lon1, lat2, lon2){
+  var R = 6371000, rad = Math.PI/180;
+  var dLat = (lat2-lat1)*rad, dLon = (lon2-lon1)*rad;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+          Math.cos(lat1*rad)*Math.cos(lat2*rad)*Math.sin(dLon/2)*Math.sin(dLon/2);
+  return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+/* Busca com prazo. Sem isso, uma API lenta trava a tela até o navegador desistir. */
+function buscarJson(url, opcoes, ms){
+  opcoes = opcoes || {};
+  var controle = new AbortController();
+  var relogio = setTimeout(function(){ controle.abort(); }, ms || 12000);
+  opcoes.signal = controle.signal;
+  return fetch(url, opcoes)
+    .then(function(r){
+      if(!r.ok) throw new Error('resposta ' + r.status);
+      return r.json();
+    })
+    .finally(function(){ clearTimeout(relogio); });
+}
+
+/* ==================== catálogo ==================== */
+
+var catalogo = [];
+
+function carregarCatalogo(){
+  return buscarJson('catalogo.json').then(function(j){
+    catalogo = j.produtos || [];
+    montarSugestoes();
+    montarDatalist();
+  });
+}
+
+function procurar(termo){
+  var t = semAcento(termo).trim();
+  if(t.length < 2) return [];
+
+  var pontuar = function(p){
+    var nome = semAcento(p.nome);
+    var marca = semAcento(p.marca);
+    var termos = (p.termos || []).map(semAcento);
+
+    if(termos.indexOf(t) > -1) return 100;
+    if(nome === t) return 95;
+    for(var i=0;i<termos.length;i++){
+      if(termos[i].indexOf(t) === 0) return 80;
+      if(t.indexOf(termos[i]) === 0) return 70;
+    }
+    if(nome.indexOf(t) > -1) return 60;
+    if(marca.indexOf(t) > -1) return 40;
+    // cada palavra do termo que aparece no nome conta ponto
+    var palavras = t.split(/\s+/).filter(function(x){ return x.length > 2; });
+    var acertos = palavras.filter(function(x){ return nome.indexOf(x) > -1; }).length;
+    if(acertos) return 10 + acertos * 5;
+    return 0;
+  };
+
+  return catalogo
+    .map(function(p){ return { p: p, nota: pontuar(p) }; })
+    .filter(function(x){ return x.nota > 0; })
+    .sort(function(a,b){ return b.nota - a.nota; })
+    .map(function(x){ return x.p; });
+}
+
+function montarSugestoes(){
+  var exemplos = ['leite condensado', 'arroz', 'café', 'macarrão', 'refrigerante', 'pão de forma', 'sabão em pó'];
+  el('sugestoes').innerHTML = exemplos.map(function(t){
+    return '<button class="chip" data-termo="' + esc(t) + '">' + esc(t) + '</button>';
+  }).join('');
+}
+
+function montarDatalist(){
+  var vistos = {};
+  var termos = [];
+  catalogo.forEach(function(p){
+    (p.termos || []).forEach(function(t){
+      if(!vistos[t]){ vistos[t] = 1; termos.push(t); }
+    });
+  });
+  el('lista').innerHTML = termos.sort().map(function(t){
+    return '<option value="' + esc(t) + '">';
+  }).join('');
+}
+
+/* ==================== as três fontes ==================== */
+
+function fichaDoProduto(codigo){
+  var campos = 'code,product_name,product_name_pt,brands,quantity,image_front_small_url,categories_tags';
+  return buscarJson(URL_OFF + encodeURIComponent(codigo) + '?fields=' + campos, {}, 9000)
+    .then(function(j){
+      if(!j.product) return null;
+      var p = j.product;
+      return {
+        nome: (p.product_name_pt || p.product_name || '').trim() || null,
+        marca: (p.brands || '').split(',')[0].trim() || null,
+        quantidade: p.quantity || null,
+        imagem: p.image_front_small_url || null
+      };
+    });
+}
+
+function precosDoProduto(codigo){
+  return buscarJson(URL_PRECOS + '?product_code=' + encodeURIComponent(codigo) + '&size=50&order_by=-date', {}, 9000)
+    .then(function(j){
+      return (j.items || [])
+        .filter(function(it){
+          return it.location && it.location.osm_lat != null && it.location.osm_lon != null;
+        })
+        .map(function(it){
+          return {
+            valor: it.price,
+            moeda: it.currency || 'EUR',
+            data: it.date || null,
+            osmId: it.location.osm_id,
+            nome: it.location.osm_name || 'Loja',
+            lat: it.location.osm_lat,
+            lon: it.location.osm_lon
+          };
+        });
+    });
+}
+
+function lojasPorPerto(lat, lon, raio, tipos){
+  var filtro = tipos.join('|');
+  var consulta = '[out:json][timeout:20];' +
+    'nwr["shop"~"^(' + filtro + ')$"](around:' + raio + ',' + lat + ',' + lon + ');' +
+    'out center tags 80;';
+
+  return buscarJson(URL_OVERPASS, {
+    method: 'POST',
+    body: 'data=' + encodeURIComponent(consulta)
+  }, 25000).then(function(j){
+    return (j.elements || []).map(function(e){
+      var tags = e.tags || {};
+      var la = e.lat != null ? e.lat : (e.center && e.center.lat);
+      var lo = e.lon != null ? e.lon : (e.center && e.center.lon);
+      if(!tags.name || la == null || lo == null) return null;
+      var rua = tags['addr:street'];
+      var num = tags['addr:housenumber'];
+      return {
+        osmId: e.id,
+        nome: tags.name,
+        tipo: tags.shop || 'loja',
+        endereco: rua ? (rua + (num ? ', ' + num : '')) : null,
+        lat: la, lon: lo
+      };
+    }).filter(Boolean);
+  });
+}
+
+/* ==================== a busca ==================== */
+
+var buscando = false;
+
+function mostrarErro(msg){
+  var e = el('erro');
+  if(!msg){ e.hidden = true; return; }
+  e.textContent = msg;
+  e.hidden = false;
+}
+
+function coordenadaEscolhida(){
+  var id = el('onde').value;
+  var lugar = LUGARES.filter(function(l){ return l.id === id; })[0];
+
+  if(lugar && lugar.lat != null){
+    return Promise.resolve({ lat: lugar.lat, lon: lugar.lon, rotulo: lugar.nome });
+  }
+
+  return new Promise(function(resolve, reject){
+    if(!navigator.geolocation){
+      reject(new Error('Seu navegador não oferece localização. Escolha uma cidade da lista.'));
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      function(pos){
+        resolve({
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+          rotulo: 'sua localização'
+        });
+      },
+      function(){
+        reject(new Error('Não consegui pegar sua localização. Autorize no navegador ou escolha uma cidade da lista.'));
+      },
+      { timeout: 10000, maximumAge: 60000 }
+    );
+  });
+}
+
+function passo(txt){
+  el('resultado').innerHTML =
+    '<div class="card"><div class="carregando">Procurando…</div>' +
+    '<div class="passo">' + esc(txt) + '</div></div>';
+}
+
+function buscar(){
+  if(buscando) return;
+  mostrarErro('');
+
+  var termo = el('q').value.trim();
+  if(termo.length < 2){
+    mostrarErro('Digite pelo menos duas letras.');
+    return;
+  }
+
+  var achados = procurar(termo);
+  if(!achados.length){
+    mostrarErro('Não achei "' + termo + '" no catálogo da demonstração. Tente um dos exemplos abaixo do campo.');
+    el('resultado').innerHTML = '';
+    return;
+  }
+
+  var produto = achados[0];
+  var raio = parseInt(el('raio').value, 10);
+  var fontes = [];
+
+  buscando = true;
+  el('buscar').disabled = true;
+  passo('descobrindo onde você está');
+
+  coordenadaEscolhida().then(function(onde){
+    el('local').innerHTML = 'Procurando num raio de <b>' + distanciaTexto(raio) +
+      '</b> a partir de <b>' + esc(onde.rotulo) + '</b>.';
+
+    passo('consultando OpenStreetMap, Open Food Facts e Open Prices');
+
+    var tipos = LOJAS_POR_TIPO[produto.tipo] || LOJAS_POR_TIPO.mercado;
+
+    // As três fontes em paralelo. Nenhuma delas pode derrubar a busca:
+    // cada uma cai para um valor de reserva e o problema vira um aviso.
+    var tarefas = [
+      fichaDoProduto(produto.codigo)
+        .then(function(f){ fontes.push({ nome:'Open Food Facts', ok:true }); return f; })
+        .catch(function(e){ fontes.push({ nome:'Open Food Facts', ok:false, detalhe:e.message }); return null; }),
+
+      precosDoProduto(produto.codigo)
+        .then(function(p){ fontes.push({ nome:'Open Prices', ok:true }); return p; })
+        .catch(function(e){ fontes.push({ nome:'Open Prices', ok:false, detalhe:e.message }); return []; }),
+
+      lojasPorPerto(onde.lat, onde.lon, raio, tipos)
+        .then(function(l){ fontes.push({ nome:'OpenStreetMap', ok:true }); return l; })
+        .catch(function(e){ fontes.push({ nome:'OpenStreetMap', ok:false, detalhe:e.message }); return []; })
+    ];
+
+    return Promise.all(tarefas).then(function(r){
+      montar(produto, r[0], r[1], r[2], onde, raio, fontes, achados);
+    });
+  }).catch(function(e){
+    mostrarErro(e.message || 'Algo deu errado.');
+    el('resultado').innerHTML = '';
+  }).finally(function(){
+    buscando = false;
+    el('buscar').disabled = false;
+  });
+}
+
+/* ==================== montagem da resposta ==================== */
+
+function montar(produto, ficha, precos, lojas, onde, raio, fontes, alternativas){
+  var nome = (ficha && ficha.nome) || produto.nome;
+  var marca = (ficha && ficha.marca) || produto.marca;
+  var quantidade = (ficha && ficha.quantidade) || produto.quantidade;
+  var imagem = ficha && ficha.imagem;
+
+  // Cada loja do raio, com distância calculada.
+  var comDistancia = lojas.map(function(l){
+    return Object.assign({}, l, {
+      distancia: distancia(onde.lat, onde.lon, l.lat, l.lon)
+    });
+  }).filter(function(l){ return l.distancia <= raio; });
+
+  // Preços do Open Prices que caem dentro do raio entram como loja também.
+  var porOsm = {};
+  comDistancia.forEach(function(l){ porOsm[l.osmId] = l; });
+
+  precos.forEach(function(p){
+    var d = distancia(onde.lat, onde.lon, p.lat, p.lon);
+    if(d > raio) return;
+
+    var alvo = porOsm[p.osmId];
+    if(!alvo){
+      alvo = {
+        osmId: p.osmId, nome: p.nome, tipo: 'loja', endereco: null,
+        lat: p.lat, lon: p.lon, distancia: d
+      };
+      porOsm[p.osmId] = alvo;
+      comDistancia.push(alvo);
+    }
+    // Fica o mais recente (a lista já vem ordenada por data).
+    if(!alvo.preco) alvo.preco = { valor: p.valor, moeda: p.moeda, data: p.data };
+  });
+
+  // Com preço primeiro, do mais barato; depois as sem preço, da mais perto.
+  comDistancia.sort(function(a, b){
+    if(a.preco && b.preco) return a.preco.valor - b.preco.valor;
+    if(a.preco) return -1;
+    if(b.preco) return 1;
+    return a.distancia - b.distancia;
+  });
+
+  var comPreco = comDistancia.filter(function(l){ return l.preco; });
+  var menor = comPreco.length ? comPreco[0].preco : null;
+
+  var html = '<div class="card">';
+
+  html += '<div class="produto">';
+  if(imagem) html += '<img src="' + esc(imagem) + '" alt="">';
+  html += '<div class="meta"><div class="nome">' + esc(nome) + '</div>' +
+    '<div class="det">' +
+      (marca ? esc(marca) : '') +
+      (quantidade ? ' · ' + esc(quantidade) : '') +
+      ' · código ' + esc(produto.codigo) +
+    '</div></div>';
+  html += '</div>';
+
+  html += '<div class="resumo">' +
+    tile('Lojas no raio', comDistancia.length) +
+    tile('Com preço registrado', comPreco.length) +
+    tile('Menor preço', menor ? BRL.format(converter(menor)) : '—', !!menor) +
+    '</div>';
+
+  if(!comDistancia.length){
+    html += '<div class="vazio">Nenhuma loja desse tipo no raio escolhido.' +
+      '<br>Tente aumentar o raio ou escolher outra cidade.</div>';
+  } else {
+    html += '<div class="lojas">' + comDistancia.slice(0, 40).map(cartaoDaLoja).join('') + '</div>';
+  }
+
+  html += '<div class="fontes">' + fontes.map(function(f){
+    return '<span class="fonte ' + (f.ok ? 'ok' : 'falhou') + '">' +
+      esc(f.nome) + ': ' + (f.ok ? 'respondeu' : 'não respondeu') + '</span>';
+  }).join('') + '</div>';
+
+  if(alternativas.length > 1){
+    html += '<p class="det" style="margin-top:16px; color:var(--ink-2); font-size:13px">Outros que batem: ' +
+      alternativas.slice(1, 5).map(function(p){ return esc(p.nome); }).join(' · ') + '</p>';
+  }
+
+  html += '</div>';
+  el('resultado').innerHTML = html;
+}
+
+function tile(rotulo, valor, positivo){
+  return '<div class="tile"><span class="lab">' + esc(rotulo) + '</span>' +
+    '<div class="val' + (positivo ? ' pos' : '') + '">' + esc(valor) + '</div></div>';
+}
+
+/* O Open Prices guarda em euro a maior parte dos registros. Mostrar "R$" num
+   preço que veio em EUR seria mentira, então a moeda vai junto. */
+function converter(preco){
+  return preco.valor;
+}
+
+function cartaoDaLoja(l){
+  var mapa = 'https://www.openstreetmap.org/?mlat=' + l.lat + '&mlon=' + l.lon + '#map=18/' + l.lat + '/' + l.lon;
+
+  var preco = '';
+  if(l.preco){
+    var moeda = l.preco.moeda || 'BRL';
+    var valor = moeda === 'BRL'
+      ? BRL.format(l.preco.valor)
+      : new Intl.NumberFormat('pt-BR', { style:'currency', currency: moeda }).format(l.preco.valor);
+    preco = '<div class="p"><div class="v">' + esc(valor) + '</div>' +
+      '<div class="q">' + (l.preco.data ? 'registrado em ' + esc(formatarData(l.preco.data)) : 'sem data') + '</div></div>';
+  } else {
+    preco = '<div class="p"><span class="sem">sem preço registrado</span></div>';
+  }
+
+  return '<div class="loja' + (l.preco ? ' temPreco' : '') + '">' +
+    '<div class="info">' +
+      '<div class="n">' + esc(l.nome) +
+        (l.preco ? '<span class="badge">tem preço</span>' : '') + '</div>' +
+      '<div class="d">' + distanciaTexto(l.distancia) +
+        (l.endereco ? ' · ' + esc(l.endereco) : '') +
+        ' · <a href="' + esc(mapa) + '" target="_blank" rel="noopener">ver no mapa</a></div>' +
+    '</div>' + preco + '</div>';
+}
+
+function formatarData(iso){
+  var p = String(iso).split('-');
+  if(p.length !== 3) return iso;
+  return p[2] + '/' + p[1] + '/' + p[0];
+}
+
+/* ==================== tema ==================== */
+
+(function tema(){
+  var salvo = null;
+  try { salvo = localStorage.getItem('acha-tema'); } catch(e){}
+  if(salvo === 'dark' || salvo === 'light') document.documentElement.setAttribute('data-theme', salvo);
+
+  el('tema').addEventListener('click', function(){
+    var atual = document.documentElement.getAttribute('data-theme');
+    var escuro = atual ? atual === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var novo = escuro ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', novo);
+    try { localStorage.setItem('acha-tema', novo); } catch(e){}
+  });
+})();
+
+/* ==================== ligações ==================== */
+
+el('onde').innerHTML = LUGARES.map(function(l){
+  return '<option value="' + l.id + '">' + esc(l.nome) + '</option>';
+}).join('');
+
+el('buscar').addEventListener('click', buscar);
+
+el('q').addEventListener('keydown', function(e){
+  if(e.key === 'Enter') buscar();
+});
+
+el('sugestoes').addEventListener('click', function(e){
+  var b = e.target.closest ? e.target.closest('[data-termo]') : null;
+  if(!b) return;
+  el('q').value = b.getAttribute('data-termo');
+  buscar();
+});
+
+carregarCatalogo().catch(function(){
+  mostrarErro('Não consegui carregar o catálogo da demonstração. Recarregue a página.');
+});
+
+})();
+</script>
+</body>
+</html>
