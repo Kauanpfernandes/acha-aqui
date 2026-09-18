@@ -6,6 +6,10 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Kauanpfernandes/acha-aqui/actions/workflows/ci.yml"><img src="https://github.com/Kauanpfernandes/acha-aqui/actions/workflows/ci.yml/badge.svg" alt="Testes"></a>
+</p>
+
+<p align="center">
   <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=nodedotjs&logoColor=white" alt="Node">
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript">
   <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white" alt="Express">
