@@ -123,6 +123,9 @@ input:focus, select:focus{outline:2px solid var(--accent); outline-offset:-1px; 
 .badge{display:inline-block; background:var(--accent-soft); color:var(--accent);
   border-radius:999px; padding:1px 8px; font-size:11px; font-weight:600; margin-left:6px}
 
+.dica{margin-top:16px; padding:13px 15px; border-radius:11px; background:var(--surface-2);
+  color:var(--ink-2); font-size:13px; line-height:1.6}
+.dica b{color:var(--ink); font-weight:600}
 .fontes{margin-top:22px; display:flex; gap:8px; flex-wrap:wrap}
 .fonte{font-size:12px; border-radius:999px; padding:4px 11px; border:1px solid var(--line-2); color:var(--ink-2)}
 .fonte.ok{border-color:var(--pos); color:var(--pos)}
@@ -214,6 +217,7 @@ var LUGARES = [
   { id:'rj',  nome:'Rio de Janeiro, Copacabana', lat:-22.9711, lon:-43.1822 },
   { id:'poa', nome:'Porto Alegre, Centro',   lat:-30.0318, lon:-51.2300 },
   { id:'rec', nome:'Recife, Boa Viagem',     lat:-8.1207,  lon:-34.9007 },
+  { id:'gre', nome:'Grenoble, França (tem preço)', lat:45.1830, lon:5.7240 },
   { id:'meu', nome:'Usar minha localização', lat:null, lon:null }
 ];
 
@@ -319,7 +323,7 @@ function procurar(termo){
 }
 
 function montarSugestoes(){
-  var exemplos = ['leite condensado', 'arroz', 'café', 'macarrão', 'refrigerante', 'pão de forma', 'sabão em pó'];
+  var exemplos = ['leite condensado', 'arroz', 'café', 'macarrão', 'refrigerante', 'pão de forma', 'leite bio'];
   el('sugestoes').innerHTML = exemplos.map(function(t){
     return '<button class="chip" data-termo="' + esc(t) + '">' + esc(t) + '</button>';
   }).join('');
@@ -581,6 +585,14 @@ function montar(produto, ficha, precos, lojas, onde, raio, fontes, alternativas)
       '<br>Tente aumentar o raio ou escolher outra cidade.</div>';
   } else {
     html += '<div class="lojas">' + comDistancia.slice(0, 40).map(cartaoDaLoja).join('') + '</div>';
+  }
+
+  if(comDistancia.length && !comPreco.length){
+    html += '<div class="dica">Nenhuma loja daqui tem preço registrado, e isso é a realidade da base: ' +
+      'o Open Prices é colaborativo e quase não tem Brasil. É por isso que o Acha Aqui deixa o próprio ' +
+      'usuário registrar quanto pagou. <b>Para ver a parte de preço funcionando</b>, escolha ' +
+      '<i>Grenoble, França</i> em "onde você está" e busque <b>leite bio</b>, <b>tofu</b> ou ' +
+      '<b>creme de coco</b>: lá a base tem registro de verdade.</div>';
   }
 
   html += '<div class="fontes">' + fontes.map(function(f){

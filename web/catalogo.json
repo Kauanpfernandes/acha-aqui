@@ -1,53 +1,656 @@
 {
-  "sobre": "Catálogo de partida da demonstração. Todos os códigos de barras são reais e foram coletados do Open Food Facts, filtrando produtos vendidos no Brasil. A demo precisa deste arquivo porque o Open Food Facts bloqueia busca por nome vinda do navegador (CORS); consulta por código de barras ele libera. A API do Acha Aqui não tem essa limitação, porque busca pelo servidor.",
+  "sobre": "Catálogo de partida da demonstração. Todos os códigos de barras são reais e vieram do Open Food Facts. A demo precisa deste arquivo porque o Open Food Facts bloqueia busca por nome vinda do navegador (CORS); consulta por código de barras ele libera. A API do Acha Aqui não tem essa limitação, porque busca pelo servidor. Os itens com \"regiao\": \"eu\" existem para mostrar a parte de preço funcionando: o Open Prices quase não tem registro do Brasil, mas tem de Grenoble, na França.",
   "produtos": [
-    { "codigo": "7896290300189", "nome": "Arroz Branco Prato Fino", "marca": "Prato Fino", "quantidade": "1 kg", "termos": ["arroz", "arroz branco"], "tipo": "mercado" },
-    { "codigo": "7895000318629", "nome": "Arroz Branco Qualitá", "marca": "Qualitá", "quantidade": "1 kg", "termos": ["arroz", "arroz branco"], "tipo": "mercado" },
-    { "codigo": "7896070800014", "nome": "Feijão Carioca Tipo 1 Pantera", "marca": "Pantera", "quantidade": "1 kg", "termos": ["feijao", "feijão", "feijão carioca"], "tipo": "mercado" },
-    { "codigo": "7896116900029", "nome": "Feijão Carioca Kicaldo", "marca": "Kicaldo", "quantidade": "1 kg", "termos": ["feijao", "feijão", "feijão carioca"], "tipo": "mercado" },
-    { "codigo": "7891910000197", "nome": "Açúcar Refinado União", "marca": "União", "quantidade": "1 kg", "termos": ["acucar", "açúcar", "açúcar refinado"], "tipo": "mercado" },
-    { "codigo": "7896109801005", "nome": "Açúcar Refinado Especial Guarani", "marca": "Guarani", "quantidade": "1 kg", "termos": ["acucar", "açúcar", "açúcar refinado"], "tipo": "mercado" },
-    { "codigo": "7896032501010", "nome": "Açúcar Refinado Da Barra", "marca": "Da Barra", "quantidade": "1 kg", "termos": ["acucar", "açúcar"], "tipo": "mercado" },
-    { "codigo": "7891021006125", "nome": "Café Torrado e Moído Tradicional Melitta", "marca": "Melitta", "quantidade": "500 g", "termos": ["cafe", "café"], "tipo": "mercado" },
-    { "codigo": "7896045101658", "nome": "Café Gourmet Cerrado Mineiro 3 Corações", "marca": "3 Corações", "quantidade": "250 g", "termos": ["cafe", "café"], "tipo": "mercado" },
-    { "codigo": "7891000100103", "nome": "Leite Condensado Moça", "marca": "Nestlé", "quantidade": "395 g", "termos": ["leite condensado", "moça", "condensado"], "tipo": "mercado" },
-    { "codigo": "7898215152002", "nome": "Leite Condensado Piracanjuba", "marca": "Piracanjuba", "quantidade": "395 g", "termos": ["leite condensado", "condensado"], "tipo": "mercado" },
-    { "codigo": "7898080640413", "nome": "Leite Condensado Italac", "marca": "Italac", "quantidade": "395 g", "termos": ["leite condensado", "condensado"], "tipo": "mercado" },
-    { "codigo": "7891000325858", "nome": "Leite em Pó Ninho Integral", "marca": "Nestlé Ninho", "quantidade": "380 g", "termos": ["leite", "leite em po", "leite em pó", "ninho"], "tipo": "mercado" },
-    { "codigo": "7896036090244", "nome": "Óleo de Soja Tipo 1", "marca": "Cargill", "quantidade": "900 ml", "termos": ["oleo", "óleo", "óleo de soja"], "tipo": "mercado" },
-    { "codigo": "7891107101621", "nome": "Óleo de Soja Soya", "marca": "Soya", "quantidade": "500 ml", "termos": ["oleo", "óleo", "óleo de soja"], "tipo": "mercado" },
-    { "codigo": "7893000394209", "nome": "Margarina Cremosa Com Sal Qualy", "marca": "Qualy", "quantidade": "500 g", "termos": ["margarina", "manteiga"], "tipo": "mercado" },
-    { "codigo": "7893000383005", "nome": "Margarina Sem Sal Qualy", "marca": "Qualy", "quantidade": "500 g", "termos": ["margarina", "manteiga"], "tipo": "mercado" },
-    { "codigo": "7894904271528", "nome": "Margarina Com Sal e Creme de Leite Delícia", "marca": "Delícia", "quantidade": "500 g", "termos": ["margarina"], "tipo": "mercado" },
-    { "codigo": "7896022200206", "nome": "Macarrão Parafuso Sêmola Com Ovos Renata", "marca": "Renata", "quantidade": "500 g", "termos": ["macarrao", "macarrão", "massa"], "tipo": "mercado" },
-    { "codigo": "7896005286593", "nome": "Macarrão Parafuso Dona Benta", "marca": "Dona Benta", "quantidade": null, "termos": ["macarrao", "macarrão", "massa"], "tipo": "mercado" },
-    { "codigo": "7891079000212", "nome": "Macarrão Instantâneo Lámen Galinha Nissin", "marca": "Nissin", "quantidade": "85 g", "termos": ["macarrao instantaneo", "miojo", "lamen", "macarrão"], "tipo": "mercado" },
-    { "codigo": "7891079000205", "nome": "Macarrão Instantâneo Lámen Carne Nissin", "marca": "Nissin", "quantidade": "85 g", "termos": ["macarrao instantaneo", "miojo", "lamen"], "tipo": "mercado" },
-    { "codigo": "7891000412855", "nome": "Achocolatado em Pó Nescau", "marca": "Nestlé", "quantidade": "350 g", "termos": ["achocolatado", "nescau"], "tipo": "mercado" },
-    { "codigo": "7892840819170", "nome": "Achocolatado Toddy Original", "marca": "Toddy", "quantidade": "750 g", "termos": ["achocolatado", "toddy"], "tipo": "mercado" },
-    { "codigo": "7894900027013", "nome": "Refrigerante Coca-Cola Original 2 L", "marca": "Coca-Cola", "quantidade": "2 L", "termos": ["refrigerante", "coca cola", "coca"], "tipo": "bebida" },
-    { "codigo": "7894900701517", "nome": "Coca-Cola Zero Açúcar 2 L", "marca": "Coca-Cola", "quantidade": "2 L", "termos": ["refrigerante", "coca cola", "coca zero"], "tipo": "bebida" },
-    { "codigo": "7894900010015", "nome": "Coca-Cola Lata 350 ml", "marca": "Coca-Cola", "quantidade": "350 ml", "termos": ["refrigerante", "coca cola", "coca"], "tipo": "bebida" },
-    { "codigo": "7891991000727", "nome": "Guaraná Antarctica Zero", "marca": "Antarctica", "quantidade": "350 ml", "termos": ["refrigerante", "guarana", "guaraná"], "tipo": "bebida" },
-    { "codigo": "7891141019838", "nome": "Suco de Uva Aurora", "marca": "Aurora", "quantidade": "1,5 L", "termos": ["suco", "suco de uva"], "tipo": "bebida" },
-    { "codigo": "7896045506873", "nome": "Cerveja Heineken Lata 350 ml", "marca": "Heineken", "quantidade": "350 ml", "termos": ["cerveja", "heineken"], "tipo": "bebida" },
-    { "codigo": "7891991297424", "nome": "Cerveja Spaten", "marca": "Spaten", "quantidade": "350 ml", "termos": ["cerveja", "spaten"], "tipo": "bebida" },
-    { "codigo": "7897517206086", "nome": "Molho de Tomate Tradicional Fugini", "marca": "Fugini", "quantidade": "300 g", "termos": ["molho de tomate", "molho"], "tipo": "mercado" },
-    { "codigo": "7896036099988", "nome": "Molho de Tomate Tradicional Pomarola", "marca": "Pomarola", "quantidade": "300 g", "termos": ["molho de tomate", "molho"], "tipo": "mercado" },
-    { "codigo": "7896102501896", "nome": "Molho de Tomate Tradicional Heinz", "marca": "Heinz", "quantidade": "300 g", "termos": ["molho de tomate", "molho"], "tipo": "mercado" },
-    { "codigo": "7891150027848", "nome": "Ketchup Tradicional Hellmann's", "marca": "Hellmann's", "quantidade": "380 g", "termos": ["ketchup", "catchup"], "tipo": "mercado" },
-    { "codigo": "7896102503708", "nome": "Ketchup Heinz", "marca": "Heinz", "quantidade": "397 g", "termos": ["ketchup", "catchup"], "tipo": "mercado" },
-    { "codigo": "7891167011779", "nome": "Atum Ralado Ao Natural Gomes da Costa", "marca": "Gomes da Costa", "quantidade": "170 g", "termos": ["atum", "enlatado"], "tipo": "mercado" },
-    { "codigo": "7891167021013", "nome": "Sardinha Com Óleo Gomes da Costa", "marca": "Gomes da Costa", "quantidade": "125 g", "termos": ["sardinha", "enlatado"], "tipo": "mercado" },
-    { "codigo": "7896009301049", "nome": "Sardinha Com Óleo Coqueiro", "marca": "Coqueiro", "quantidade": "125 g", "termos": ["sardinha", "enlatado"], "tipo": "mercado" },
-    { "codigo": "7891203010056", "nome": "Pão de Forma Panco Premium", "marca": "Panco", "quantidade": "500 g", "termos": ["pao", "pão", "pão de forma"], "tipo": "padaria" },
-    { "codigo": "7896002360326", "nome": "Pão de Forma Tradicional Pullman", "marca": "Pullman", "quantidade": "480 g", "termos": ["pao", "pão", "pão de forma"], "tipo": "padaria" },
-    { "codigo": "7896066301457", "nome": "Pão de Forma Integral Wickbold", "marca": "Wickbold", "quantidade": "500 g", "termos": ["pao", "pão", "pão integral"], "tipo": "padaria" },
-    { "codigo": "7891203010605", "nome": "Bisnaguinha Original Panco", "marca": "Panco", "quantidade": "300 g", "termos": ["bisnaguinha", "pao", "pão"], "tipo": "padaria" },
-    { "codigo": "7891515484040", "nome": "Presunto Cozido Fatiado Perdigão", "marca": "Perdigão", "quantidade": "200 g", "termos": ["presunto", "frios"], "tipo": "mercado" },
-    { "codigo": "7892840822903", "nome": "Salgadinho de Milho Sabor Presunto Elma Chips", "marca": "Elma Chips", "quantidade": "160 g", "termos": ["salgadinho", "chips"], "tipo": "mercado" },
-    { "codigo": "7891150069138", "nome": "Sabão em Pó Brilhante", "marca": "Brilhante", "quantidade": "2,2 kg", "termos": ["sabao em po", "sabão em pó", "sabao", "limpeza"], "tipo": "limpeza" },
-    { "codigo": "7897664120037", "nome": "Sabão de Coco em Pó Minuano", "marca": "Minuano", "quantidade": "500 g", "termos": ["sabao", "sabão", "limpeza"], "tipo": "limpeza" },
-    { "codigo": "7896094910959", "nome": "Adoçante Dietético Líquido Zero Cal", "marca": "Zero Cal", "quantidade": "200 ml", "termos": ["adocante", "adoçante"], "tipo": "mercado" }
+    {
+      "codigo": "7896290300189",
+      "nome": "Arroz Branco Prato Fino",
+      "marca": "Prato Fino",
+      "quantidade": "1 kg",
+      "termos": [
+        "arroz",
+        "arroz branco"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7895000318629",
+      "nome": "Arroz Branco Qualitá",
+      "marca": "Qualitá",
+      "quantidade": "1 kg",
+      "termos": [
+        "arroz",
+        "arroz branco"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896070800014",
+      "nome": "Feijão Carioca Tipo 1 Pantera",
+      "marca": "Pantera",
+      "quantidade": "1 kg",
+      "termos": [
+        "feijao",
+        "feijão",
+        "feijão carioca"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896116900029",
+      "nome": "Feijão Carioca Kicaldo",
+      "marca": "Kicaldo",
+      "quantidade": "1 kg",
+      "termos": [
+        "feijao",
+        "feijão",
+        "feijão carioca"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891910000197",
+      "nome": "Açúcar Refinado União",
+      "marca": "União",
+      "quantidade": "1 kg",
+      "termos": [
+        "acucar",
+        "açúcar",
+        "açúcar refinado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896109801005",
+      "nome": "Açúcar Refinado Especial Guarani",
+      "marca": "Guarani",
+      "quantidade": "1 kg",
+      "termos": [
+        "acucar",
+        "açúcar",
+        "açúcar refinado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896032501010",
+      "nome": "Açúcar Refinado Da Barra",
+      "marca": "Da Barra",
+      "quantidade": "1 kg",
+      "termos": [
+        "acucar",
+        "açúcar"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891021006125",
+      "nome": "Café Torrado e Moído Tradicional Melitta",
+      "marca": "Melitta",
+      "quantidade": "500 g",
+      "termos": [
+        "cafe",
+        "café"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896045101658",
+      "nome": "Café Gourmet Cerrado Mineiro 3 Corações",
+      "marca": "3 Corações",
+      "quantidade": "250 g",
+      "termos": [
+        "cafe",
+        "café"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891000100103",
+      "nome": "Leite Condensado Moça",
+      "marca": "Nestlé",
+      "quantidade": "395 g",
+      "termos": [
+        "leite condensado",
+        "moça",
+        "condensado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7898215152002",
+      "nome": "Leite Condensado Piracanjuba",
+      "marca": "Piracanjuba",
+      "quantidade": "395 g",
+      "termos": [
+        "leite condensado",
+        "condensado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7898080640413",
+      "nome": "Leite Condensado Italac",
+      "marca": "Italac",
+      "quantidade": "395 g",
+      "termos": [
+        "leite condensado",
+        "condensado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891000325858",
+      "nome": "Leite em Pó Ninho Integral",
+      "marca": "Nestlé Ninho",
+      "quantidade": "380 g",
+      "termos": [
+        "leite",
+        "leite em po",
+        "leite em pó",
+        "ninho"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896036090244",
+      "nome": "Óleo de Soja Tipo 1",
+      "marca": "Cargill",
+      "quantidade": "900 ml",
+      "termos": [
+        "oleo",
+        "óleo",
+        "óleo de soja"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891107101621",
+      "nome": "Óleo de Soja Soya",
+      "marca": "Soya",
+      "quantidade": "500 ml",
+      "termos": [
+        "oleo",
+        "óleo",
+        "óleo de soja"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7893000394209",
+      "nome": "Margarina Cremosa Com Sal Qualy",
+      "marca": "Qualy",
+      "quantidade": "500 g",
+      "termos": [
+        "margarina",
+        "manteiga"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7893000383005",
+      "nome": "Margarina Sem Sal Qualy",
+      "marca": "Qualy",
+      "quantidade": "500 g",
+      "termos": [
+        "margarina",
+        "manteiga"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7894904271528",
+      "nome": "Margarina Com Sal e Creme de Leite Delícia",
+      "marca": "Delícia",
+      "quantidade": "500 g",
+      "termos": [
+        "margarina"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896022200206",
+      "nome": "Macarrão Parafuso Sêmola Com Ovos Renata",
+      "marca": "Renata",
+      "quantidade": "500 g",
+      "termos": [
+        "macarrao",
+        "macarrão",
+        "massa"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896005286593",
+      "nome": "Macarrão Parafuso Dona Benta",
+      "marca": "Dona Benta",
+      "quantidade": null,
+      "termos": [
+        "macarrao",
+        "macarrão",
+        "massa"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891079000212",
+      "nome": "Macarrão Instantâneo Lámen Galinha Nissin",
+      "marca": "Nissin",
+      "quantidade": "85 g",
+      "termos": [
+        "macarrao instantaneo",
+        "miojo",
+        "lamen",
+        "macarrão"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891079000205",
+      "nome": "Macarrão Instantâneo Lámen Carne Nissin",
+      "marca": "Nissin",
+      "quantidade": "85 g",
+      "termos": [
+        "macarrao instantaneo",
+        "miojo",
+        "lamen"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891000412855",
+      "nome": "Achocolatado em Pó Nescau",
+      "marca": "Nestlé",
+      "quantidade": "350 g",
+      "termos": [
+        "achocolatado",
+        "nescau"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7892840819170",
+      "nome": "Achocolatado Toddy Original",
+      "marca": "Toddy",
+      "quantidade": "750 g",
+      "termos": [
+        "achocolatado",
+        "toddy"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7894900027013",
+      "nome": "Refrigerante Coca-Cola Original 2 L",
+      "marca": "Coca-Cola",
+      "quantidade": "2 L",
+      "termos": [
+        "refrigerante",
+        "coca cola",
+        "coca"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7894900701517",
+      "nome": "Coca-Cola Zero Açúcar 2 L",
+      "marca": "Coca-Cola",
+      "quantidade": "2 L",
+      "termos": [
+        "refrigerante",
+        "coca cola",
+        "coca zero"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7894900010015",
+      "nome": "Coca-Cola Lata 350 ml",
+      "marca": "Coca-Cola",
+      "quantidade": "350 ml",
+      "termos": [
+        "refrigerante",
+        "coca cola",
+        "coca"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891991000727",
+      "nome": "Guaraná Antarctica Zero",
+      "marca": "Antarctica",
+      "quantidade": "350 ml",
+      "termos": [
+        "refrigerante",
+        "guarana",
+        "guaraná"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891141019838",
+      "nome": "Suco de Uva Aurora",
+      "marca": "Aurora",
+      "quantidade": "1,5 L",
+      "termos": [
+        "suco",
+        "suco de uva"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896045506873",
+      "nome": "Cerveja Heineken Lata 350 ml",
+      "marca": "Heineken",
+      "quantidade": "350 ml",
+      "termos": [
+        "cerveja",
+        "heineken"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891991297424",
+      "nome": "Cerveja Spaten",
+      "marca": "Spaten",
+      "quantidade": "350 ml",
+      "termos": [
+        "cerveja",
+        "spaten"
+      ],
+      "tipo": "bebida",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7897517206086",
+      "nome": "Molho de Tomate Tradicional Fugini",
+      "marca": "Fugini",
+      "quantidade": "300 g",
+      "termos": [
+        "molho de tomate",
+        "molho"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896036099988",
+      "nome": "Molho de Tomate Tradicional Pomarola",
+      "marca": "Pomarola",
+      "quantidade": "300 g",
+      "termos": [
+        "molho de tomate",
+        "molho"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896102501896",
+      "nome": "Molho de Tomate Tradicional Heinz",
+      "marca": "Heinz",
+      "quantidade": "300 g",
+      "termos": [
+        "molho de tomate",
+        "molho"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891150027848",
+      "nome": "Ketchup Tradicional Hellmann's",
+      "marca": "Hellmann's",
+      "quantidade": "380 g",
+      "termos": [
+        "ketchup",
+        "catchup"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896102503708",
+      "nome": "Ketchup Heinz",
+      "marca": "Heinz",
+      "quantidade": "397 g",
+      "termos": [
+        "ketchup",
+        "catchup"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891167011779",
+      "nome": "Atum Ralado Ao Natural Gomes da Costa",
+      "marca": "Gomes da Costa",
+      "quantidade": "170 g",
+      "termos": [
+        "atum",
+        "enlatado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891167021013",
+      "nome": "Sardinha Com Óleo Gomes da Costa",
+      "marca": "Gomes da Costa",
+      "quantidade": "125 g",
+      "termos": [
+        "sardinha",
+        "enlatado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896009301049",
+      "nome": "Sardinha Com Óleo Coqueiro",
+      "marca": "Coqueiro",
+      "quantidade": "125 g",
+      "termos": [
+        "sardinha",
+        "enlatado"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891203010056",
+      "nome": "Pão de Forma Panco Premium",
+      "marca": "Panco",
+      "quantidade": "500 g",
+      "termos": [
+        "pao",
+        "pão",
+        "pão de forma"
+      ],
+      "tipo": "padaria",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896002360326",
+      "nome": "Pão de Forma Tradicional Pullman",
+      "marca": "Pullman",
+      "quantidade": "480 g",
+      "termos": [
+        "pao",
+        "pão",
+        "pão de forma"
+      ],
+      "tipo": "padaria",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896066301457",
+      "nome": "Pão de Forma Integral Wickbold",
+      "marca": "Wickbold",
+      "quantidade": "500 g",
+      "termos": [
+        "pao",
+        "pão",
+        "pão integral"
+      ],
+      "tipo": "padaria",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891203010605",
+      "nome": "Bisnaguinha Original Panco",
+      "marca": "Panco",
+      "quantidade": "300 g",
+      "termos": [
+        "bisnaguinha",
+        "pao",
+        "pão"
+      ],
+      "tipo": "padaria",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891515484040",
+      "nome": "Presunto Cozido Fatiado Perdigão",
+      "marca": "Perdigão",
+      "quantidade": "200 g",
+      "termos": [
+        "presunto",
+        "frios"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7892840822903",
+      "nome": "Salgadinho de Milho Sabor Presunto Elma Chips",
+      "marca": "Elma Chips",
+      "quantidade": "160 g",
+      "termos": [
+        "salgadinho",
+        "chips"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7891150069138",
+      "nome": "Sabão em Pó Brilhante",
+      "marca": "Brilhante",
+      "quantidade": "2,2 kg",
+      "termos": [
+        "sabao em po",
+        "sabão em pó",
+        "sabao",
+        "limpeza"
+      ],
+      "tipo": "limpeza",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7897664120037",
+      "nome": "Sabão de Coco em Pó Minuano",
+      "marca": "Minuano",
+      "quantidade": "500 g",
+      "termos": [
+        "sabao",
+        "sabão",
+        "limpeza"
+      ],
+      "tipo": "limpeza",
+      "regiao": "br"
+    },
+    {
+      "codigo": "7896094910959",
+      "nome": "Adoçante Dietético Líquido Zero Cal",
+      "marca": "Zero Cal",
+      "quantidade": "200 ml",
+      "termos": [
+        "adocante",
+        "adoçante"
+      ],
+      "tipo": "mercado",
+      "regiao": "br"
+    },
+    {
+      "codigo": "3760294961186",
+      "nome": "Lait de vache demi écrémé (leite meio desnatado)",
+      "marca": "Élibio",
+      "quantidade": "1 L",
+      "termos": [
+        "leite bio",
+        "lait",
+        "leite frances"
+      ],
+      "tipo": "mercado",
+      "regiao": "eu"
+    },
+    {
+      "codigo": "3760311990731",
+      "nome": "Crème de coco (creme de coco)",
+      "marca": "Base Organic Food",
+      "quantidade": "400 ml",
+      "termos": [
+        "creme de coco",
+        "coco",
+        "creme"
+      ],
+      "tipo": "mercado",
+      "regiao": "eu"
+    },
+    {
+      "codigo": "3760294961483",
+      "nome": "Pulpe de tomates (polpa de tomate sem sal)",
+      "marca": "Élibio",
+      "quantidade": "400 g",
+      "termos": [
+        "polpa de tomate",
+        "tomate",
+        "pulpe"
+      ],
+      "tipo": "mercado",
+      "regiao": "eu"
+    },
+    {
+      "codigo": "3347430017800",
+      "nome": "Tofu Bio Nature",
+      "marca": "Moulin des Moines",
+      "quantidade": "200 g",
+      "termos": [
+        "tofu",
+        "tofu bio"
+      ],
+      "tipo": "mercado",
+      "regiao": "eu"
+    }
   ]
 }
