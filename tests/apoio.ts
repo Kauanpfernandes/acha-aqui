@@ -78,6 +78,8 @@ export const LOJAS_FARMACIA = [
 interface OpcoesFalsas {
   offFalha?: boolean;
   overpassFalha?: boolean;
+  /** Só o espelho principal cai, para testar se o segundo é tentado. */
+  overpassPrimeiroFalha?: boolean;
   openPricesFalha?: boolean;
   produtos?: unknown[];
   lojas?: unknown[];
@@ -117,6 +119,9 @@ export function simularApisExternas(opcoes: OpcoesFalsas = {}) {
 
     if (url.includes('overpass')) {
       if (opcoes.overpassFalha) throw new TypeError('fetch failed');
+      if (opcoes.overpassPrimeiroFalha && url.includes('overpass-api.de')) {
+        throw new TypeError('fetch failed');
+      }
       return resposta({ elements: opcoes.lojas ?? LOJAS_OVERPASS });
     }
 

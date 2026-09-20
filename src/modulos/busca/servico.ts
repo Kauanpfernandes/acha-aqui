@@ -341,9 +341,19 @@ async function buscarPorCategoria(params: {
 
   const categoria = categoriaDoTermo(termo);
   if (!categoria) {
+    // Um 404 que diz "não existe" quando na verdade a fonte estava fora do ar
+    // manda o cliente para o lado errado: ele para de tentar um termo que
+    // funcionaria daqui a cinco minutos. Então a mensagem muda conforme o
+    // motivo, e o corpo leva o mesmo relatório de fontes da resposta 200.
+    const caiu = fontes.filter((f) => !f.ok).map((f) => f.nome);
+
     throw naoEncontrado(
-      `Não achei "${termo}" nem como produto nem como tipo de loja. ` +
-        'Tente o nome da embalagem, o código de barras, ou algo mais genérico como "pneu" ou "parafuso".',
+      caiu.length
+        ? `Não achei "${termo}", mas ${caiu.join(' e ')} não respondeu agora. ` +
+            'Pode ser que exista e a busca não tenha conseguido ver. Tente de novo em instantes.'
+        : `Não achei "${termo}" nem como produto nem como tipo de loja. ` +
+            'Tente o nome da embalagem, o código de barras, ou algo mais genérico como "pneu" ou "parafuso".',
+      { fontes },
     );
   }
 

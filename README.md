@@ -11,7 +11,7 @@
   <img src="https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white" alt="Express">
   <img src="https://img.shields.io/badge/PostgreSQL_+_PostGIS-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL e PostGIS">
   <img src="https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white" alt="Docker">
-  <img src="https://img.shields.io/badge/39_testes-0f766e?style=flat-square" alt="39 testes">
+  <img src="https://img.shields.io/badge/41_testes-0f766e?style=flat-square" alt="41 testes">
 </p>
 
 ![Documentação da API no Swagger](docs/swagger.png)
@@ -228,12 +228,13 @@ atacante quais e-mails têm conta aqui.
 
 ### Testes contra Postgres de verdade
 
-39 testes de integração, subindo o app inteiro com supertest. O banco é Postgres
+41 testes de integração, subindo o app inteiro com supertest. O banco é Postgres
 com PostGIS mesmo, no CI também: os testes de distância dependem de `ST_DWithin`,
 então banco falso não provaria nada.
 
 As APIs externas são simuladas, com um dublê que também sabe **falhar de
-propósito**. Tem teste para "o Open Food Facts caiu e o produto já era conhecido",
+propósito**, inclusive falhar só no espelho principal do Overpass para provar
+que o segundo é tentado. Tem teste para "o Open Food Facts caiu e o produto já era conhecido",
 para "duas fontes caíram e a busca respondeu mesmo assim", e para "a segunda
 busca igual não chamou a API de novo".
 
@@ -298,7 +299,7 @@ src/
 
 web/                        a demonstração que roda no GitHub Pages
 scripts/                    gera o catálogo de categorias da demonstração
-tests/                      39 testes de integração
+tests/                      41 testes de integração
 ```
 
 ## O que eu faria depois

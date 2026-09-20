@@ -16,8 +16,8 @@ export class ErroDaApi extends Error {
 export const erroDeValidacao = (mensagem: string, detalhes?: unknown) =>
   new ErroDaApi(422, mensagem, detalhes);
 
-export const naoEncontrado = (mensagem = 'Não encontrado') =>
-  new ErroDaApi(404, mensagem);
+export const naoEncontrado = (mensagem = 'Não encontrado', detalhes?: unknown) =>
+  new ErroDaApi(404, mensagem, detalhes);
 
 export const naoAutenticado = (mensagem = 'Faça login para continuar') =>
   new ErroDaApi(401, mensagem);

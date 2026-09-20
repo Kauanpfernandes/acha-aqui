@@ -169,13 +169,29 @@ export async function lojasPorPerto(
     env.CACHE_MINUTOS_LOCAL,
     async () => {
       const consulta = montarConsulta(lat, lon, raioMetros, filtros);
-      const resposta = await buscarJson<RespostaOverpass>(env.OVERPASS_URL, {
-        fonte: 'OpenStreetMap (Overpass)',
-        metodo: 'POST',
-        corpo: `data=${encodeURIComponent(consulta)}`,
-        cabecalhos: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        timeoutMs: 25_000,
-      });
+
+      // Os dois espelhos em sequência. O retry de dentro do buscarJson já
+      // cobre o 504 passageiro; isto cobre o espelho que está fora de vez.
+      const enderecos = [env.OVERPASS_URL, env.OVERPASS_URL_RESERVA];
+      let resposta: RespostaOverpass | null = null;
+      let ultimoErro: unknown = null;
+
+      for (const endereco of enderecos) {
+        try {
+          resposta = await buscarJson<RespostaOverpass>(endereco, {
+            fonte: 'OpenStreetMap (Overpass)',
+            metodo: 'POST',
+            corpo: `data=${encodeURIComponent(consulta)}`,
+            cabecalhos: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            timeoutMs: 25_000,
+          });
+          break;
+        } catch (erro) {
+          ultimoErro = erro;
+        }
+      }
+
+      if (!resposta) throw ultimoErro;
 
       return (resposta.elements ?? [])
         .map(converter)

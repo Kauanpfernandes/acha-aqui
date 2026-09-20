@@ -9,6 +9,8 @@ import {
   simularApisExternas,
 } from './apoio.js';
 
+
+
 const app = criarApp();
 
 describe('categoriaDoTermo', () => {
@@ -150,5 +152,48 @@ describe('GET /api/busca com produto que não é comida', () => {
       .expect(404);
 
     expect(body.erro).toMatch(/não achei/i);
+    expect(body.erro).toMatch(/nem como produto nem como tipo de loja/i);
+  });
+
+  it('tenta o segundo espelho do Overpass quando o primeiro cai', async () => {
+    // O Overpass é mantido por doação e devolve 504 quando está cheio. Um
+    // espelho fora do ar não pode ser o fim da busca.
+    const { chamadas } = simularApisExternas({
+      produtos: [],
+      lojas: LOJAS_AUTOPECAS,
+      overpassPrimeiroFalha: true,
+    });
+
+    const { body } = await request(app)
+      .get('/api/busca')
+      .query({ q: 'amortecedor', ...CENTRO_BH, raio: 5000 })
+      .expect(200);
+
+    expect(chamadas.some((u) => u.includes('overpass-api.de'))).toBe(true);
+    expect(chamadas.some((u) => u.includes('kumi.systems'))).toBe(true);
+
+    const osm = body.fontes.find((f: { nome: string }) => f.nome === 'OpenStreetMap');
+    expect(osm.ok).toBe(true);
+    expect(body.ondeTem.length).toBeGreaterThan(0);
+  });
+
+  it('no 404, separa "não existe" de "a fonte caiu"', async () => {
+    // Termo diferente do teste acima para não cair no cache da busca anterior.
+    simularApisExternas({ offFalha: true });
+
+    const { body } = await request(app)
+      .get('/api/busca')
+      .query({ q: 'zzz nada disso aqui', ...CENTRO_BH })
+      .expect(404);
+
+    // Dizer "não existe" quando a fonte estava fora do ar manda o cliente
+    // desistir de um termo que funcionaria daqui a cinco minutos.
+    expect(body.erro).toMatch(/não respondeu agora/i);
+    expect(body.erro).toMatch(/Open Food Facts/);
+
+    const off = body.detalhes.fontes.find(
+      (f: { nome: string }) => f.nome === 'Open Food Facts',
+    );
+    expect(off.ok).toBe(false);
   });
 });

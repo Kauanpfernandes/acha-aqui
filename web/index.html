@@ -243,7 +243,13 @@ var LOJAS_POR_TIPO = {
 
 var URL_OFF = 'https://world.openfoodfacts.org/api/v2/product/';
 var URL_PRECOS = 'https://prices.openfoodfacts.org/api/v1/prices';
-var URL_OVERPASS = 'https://overpass-api.de/api/interpreter';
+/* O Overpass é mantido por doação e devolve 504 quando está cheio. São dois
+   endereços porque um espelho fora do ar não pode ser o fim da busca: se o
+   primeiro não responde, tenta o segundo antes de desistir. */
+var URLS_OVERPASS = [
+  'https://overpass-api.de/api/interpreter',
+  'https://overpass.kumi.systems/api/interpreter'
+];
 
 /* ==================== utilidades ==================== */
 
@@ -454,10 +460,17 @@ function lojasPorPerto(lat, lon, raio, filtros){
 
   var consulta = '[out:json][timeout:20];(' + partes + ');out center tags 80;';
 
-  return buscarJson(URL_OVERPASS, {
-    method: 'POST',
-    body: 'data=' + encodeURIComponent(consulta)
-  }, 25000).then(function(j){
+  var tentar = function(i){
+    return buscarJson(URLS_OVERPASS[i], {
+      method: 'POST',
+      body: 'data=' + encodeURIComponent(consulta)
+    }, 25000).catch(function(e){
+      if(i + 1 < URLS_OVERPASS.length) return tentar(i + 1);
+      throw e;
+    });
+  };
+
+  return tentar(0).then(function(j){
     return (j.elements || []).map(function(e){
       var tags = e.tags || {};
       var la = e.lat != null ? e.lat : (e.center && e.center.lat);
@@ -650,8 +663,7 @@ function montarCategoria(termo, cat, lojas, onde, raio, fontes){
     '</div>';
 
   if(!comDistancia.length){
-    html += '<div class="vazio">Nenhuma loja desse tipo no raio escolhido.' +
-      '<br>Tente aumentar o raio ou escolher outra cidade.</div>';
+    html += vazio(fontes);
   } else {
     html += '<div class="lojas">' + comDistancia.slice(0, 40).map(cartaoDaLoja).join('') + '</div>';
   }
@@ -738,8 +750,7 @@ function montar(produto, ficha, precos, lojas, onde, raio, fontes, alternativas)
     '</div>';
 
   if(!comDistancia.length){
-    html += '<div class="vazio">Nenhuma loja desse tipo no raio escolhido.' +
-      '<br>Tente aumentar o raio ou escolher outra cidade.</div>';
+    html += vazio(fontes);
   } else {
     html += '<div class="lojas">' + comDistancia.slice(0, 40).map(cartaoDaLoja).join('') + '</div>';
   }
@@ -764,6 +775,22 @@ function montar(produto, ficha, precos, lojas, onde, raio, fontes, alternativas)
 
   html += '</div>';
   el('resultado').innerHTML = html;
+}
+
+/* Lista vazia tem duas causas bem diferentes, e mandar aumentar o raio quando
+   o problema foi o OpenStreetMap não responder é empurrar o usuário para o
+   lado errado: ele mexe no raio, tenta de novo e continua sem nada. */
+function vazio(fontes){
+  var mapaCaiu = fontes.some(function(f){ return f.nome === 'OpenStreetMap' && !f.ok; });
+
+  if(mapaCaiu){
+    return '<div class="vazio">O OpenStreetMap não respondeu agora, então não dá ' +
+      'para dizer o que existe por perto.<br>É um serviço mantido por doação e ' +
+      'costuma voltar em instantes. Tente buscar de novo.</div>';
+  }
+
+  return '<div class="vazio">Nenhuma loja desse tipo no raio escolhido.' +
+    '<br>Tente aumentar o raio ou escolher outra cidade.</div>';
 }
 
 function tile(rotulo, valor, positivo){

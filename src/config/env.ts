@@ -21,6 +21,12 @@ const esquema = z.object({
   OPEN_FOOD_FACTS_URL: z.string().url().default('https://world.openfoodfacts.org'),
   OPEN_PRICES_URL: z.string().url().default('https://prices.openfoodfacts.org'),
   OVERPASS_URL: z.string().url().default('https://overpass-api.de/api/interpreter'),
+  // O Overpass é mantido por doação e devolve 504 quando está cheio. Um
+  // espelho fora do ar não pode ser o fim da busca, então existe um segundo.
+  OVERPASS_URL_RESERVA: z
+    .string()
+    .url()
+    .default('https://overpass.kumi.systems/api/interpreter'),
 
   // Quanto tempo uma resposta externa fica valendo no cache, em minutos.
   CACHE_MINUTOS_PRODUTO: z.coerce.number().int().positive().default(60 * 24 * 7),
