@@ -199,6 +199,22 @@ OpenStreetMap tem **65 farmácias como `amenity=pharmacy` e só 4 como
 praticamente invisível para quem buscasse remédio. Hoje o filtro aceita chave e
 valor, e não só `shop`.
 
+### O espelho do Overpass, e por que ele não está na demonstração
+
+O Overpass é mantido por doação e devolve 504 quando está cheio, então a ideia
+óbvia é ter um espelho de reserva. Antes de colocar, medi: dos quatro espelhos
+conhecidos, `kumi.systems`, `private.coffee` e `maps.mail.ru` não respondem nem
+a uma consulta trivial vinda do navegador, porque não mandam os cabeçalhos de
+CORS, e `overpass.osm.jp` recusa na hora. Só o `overpass-api.de` responde, em
+dois segundos.
+
+Quer dizer que na demonstração o espelho não salvaria busca nenhuma, e ainda
+faria cada falha demorar 25 segundos a mais esperando um servidor que nunca vem.
+Então lá ficou um endereço só. Na API, que roda no servidor e não esbarra em
+CORS, o segundo endereço continua, com metade do tempo limite do primeiro: se
+ele também estiver fora, a busca já falhou de qualquer jeito, e o que está em
+jogo é quanto o usuário espera para ouvir isso.
+
 ### A mesma tabela nos dois lados, sem copiar na mão
 
 A demonstração roda no GitHub Pages, sem servidor, então ela precisa classificar

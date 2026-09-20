@@ -243,13 +243,20 @@ var LOJAS_POR_TIPO = {
 
 var URL_OFF = 'https://world.openfoodfacts.org/api/v2/product/';
 var URL_PRECOS = 'https://prices.openfoodfacts.org/api/v1/prices';
-/* O Overpass é mantido por doação e devolve 504 quando está cheio. São dois
-   endereços porque um espelho fora do ar não pode ser o fim da busca: se o
-   primeiro não responde, tenta o segundo antes de desistir. */
-var URLS_OVERPASS = [
-  'https://overpass-api.de/api/interpreter',
-  'https://overpass.kumi.systems/api/interpreter'
-];
+/* Um endereço só, e isso foi medido antes de decidir.
+
+   A ideia era ter um espelho de reserva, já que o Overpass é mantido por
+   doação e devolve 504 quando está cheio. Testei quatro espelhos conhecidos
+   daqui do navegador: kumi.systems, private.coffee e maps.mail.ru não
+   respondem nem a uma consulta trivial (faltam os cabeçalhos de CORS), e
+   overpass.osm.jp recusa na hora. Só o overpass-api.de responde, em 2s.
+
+   Ou seja, o espelho não salvaria busca nenhuma e ainda faria cada falha
+   demorar 25 segundos a mais esperando um servidor que nunca responde. Então
+   aqui fica um endereço só, e quando ele cai a página diz isso com todas as
+   letras, em vez de culpar o raio. A API, que roda no servidor e não esbarra
+   em CORS, mantém o segundo endereço. */
+var URL_OVERPASS = 'https://overpass-api.de/api/interpreter';
 
 /* ==================== utilidades ==================== */
 
@@ -460,17 +467,10 @@ function lojasPorPerto(lat, lon, raio, filtros){
 
   var consulta = '[out:json][timeout:20];(' + partes + ');out center tags 80;';
 
-  var tentar = function(i){
-    return buscarJson(URLS_OVERPASS[i], {
-      method: 'POST',
-      body: 'data=' + encodeURIComponent(consulta)
-    }, 25000).catch(function(e){
-      if(i + 1 < URLS_OVERPASS.length) return tentar(i + 1);
-      throw e;
-    });
-  };
-
-  return tentar(0).then(function(j){
+  return buscarJson(URL_OVERPASS, {
+    method: 'POST',
+    body: 'data=' + encodeURIComponent(consulta)
+  }, 25000).then(function(j){
     return (j.elements || []).map(function(e){
       var tags = e.tags || {};
       var la = e.lat != null ? e.lat : (e.center && e.center.lat);

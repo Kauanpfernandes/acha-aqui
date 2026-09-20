@@ -172,18 +172,27 @@ export async function lojasPorPerto(
 
       // Os dois espelhos em sequência. O retry de dentro do buscarJson já
       // cobre o 504 passageiro; isto cobre o espelho que está fora de vez.
-      const enderecos = [env.OVERPASS_URL, env.OVERPASS_URL_RESERVA];
+      //
+      // O de reserva ganha metade do tempo do principal de propósito. Ele é
+      // best-effort: se estiver fora, a busca já falhou mesmo, e o que está
+      // em jogo é quanto o usuário espera para ouvir isso. Vinte e cinco
+      // segundos no principal mais doze no reserva ainda é melhor que
+      // cinquenta, e quem preferir outro endereço troca em OVERPASS_URL_RESERVA.
+      const tentativas = [
+        { url: env.OVERPASS_URL, timeoutMs: 25_000 },
+        { url: env.OVERPASS_URL_RESERVA, timeoutMs: 12_000 },
+      ];
       let resposta: RespostaOverpass | null = null;
       let ultimoErro: unknown = null;
 
-      for (const endereco of enderecos) {
+      for (const tentativa of tentativas) {
         try {
-          resposta = await buscarJson<RespostaOverpass>(endereco, {
+          resposta = await buscarJson<RespostaOverpass>(tentativa.url, {
             fonte: 'OpenStreetMap (Overpass)',
             metodo: 'POST',
             corpo: `data=${encodeURIComponent(consulta)}`,
             cabecalhos: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            timeoutMs: 25_000,
+            timeoutMs: tentativa.timeoutMs,
           });
           break;
         } catch (erro) {
