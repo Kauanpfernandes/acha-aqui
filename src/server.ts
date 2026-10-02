@@ -2,10 +2,12 @@ import { criarApp } from './app.js';
 import { env } from './config/env.js';
 import { migrar } from './db/migrar.js';
 import { fecharPool } from './db/pool.js';
+import { prepararDemo } from './db/demo.js';
 
 async function subir(): Promise<void> {
   const novas = await migrar();
   if (novas.length) console.log(`Migrations aplicadas: ${novas.join(', ')}`);
+  if (env.DEMO_ENABLED) await prepararDemo();
 
   const app = criarApp();
   const servidor = app.listen(env.PORT, () => {

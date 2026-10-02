@@ -53,6 +53,23 @@ export const openapi = {
     },
   },
   paths: {
+    '/api/demo': {
+      get: {
+        tags: ['Busca'],
+        summary: 'Experimentar o banco real com dados fictícios',
+        description: 'Disponível quando DEMO_ENABLED=true. Consulta PostgreSQL e calcula distâncias com PostGIS, sem chamar APIs externas. Nesse modo, cadastro, login e registro de preços respondem 403: a demonstração pública é somente para leitura.',
+        responses: {
+          200: { description: 'Duas ofertas fictícias ordenadas por preço, com distâncias calculadas no banco' },
+          404: { description: 'Modo de demonstração desativado' },
+        },
+      },
+    },
+    '/pronto': {
+      get: {
+        summary: 'Disponibilidade do PostgreSQL e PostGIS',
+        responses: { 200: { description: 'Banco disponível' }, 503: { description: 'Banco indisponível' } },
+      },
+    },
     '/api/busca': {
       get: {
         tags: ['Busca'],

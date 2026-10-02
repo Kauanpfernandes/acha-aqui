@@ -39,6 +39,12 @@ jobs:
       - name: Conferir os tipos
         run: npm run lint
 
+      - name: Compilar a aplicação e copiar migrations
+        run: npm run build
+
+      - name: Validar imagem Docker
+        run: docker build -t acha-aqui:ci .
+
       - name: Rodar os testes
         run: npm test
         env:

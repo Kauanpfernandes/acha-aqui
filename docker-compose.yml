@@ -23,6 +23,7 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      DEMO_ENABLED: ${DEMO_ENABLED:-false}
       DATABASE_URL: postgres://postgres:postgres@banco:5432/achaaqui
       JWT_SECRET: ${JWT_SECRET:-segredo-de-desenvolvimento-com-mais-de-32-caracteres}
     ports:
